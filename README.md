@@ -7,7 +7,8 @@ Organizations across industries face a critical challenge in identifying custome
 
 The analysis compares a classical baseline (TF-IDF with logistic regression) against two state of the art transformer architectures (DistilBERT and RoBERTa), demonstrating that modern neural language models can extract nuanced semantic patterns that traditional methods miss. Beyond predictive accuracy, this work emphasizes model interpretability through attention visualization, calibration analysis, and linguistic pattern extraction, ensuring that predictions are both accurate and explainable for business stakeholders.
 
-**[INSERT GRAPHIC: model_performance_comparison.png]**
+<img width="2685" height="1481" alt="model_performance_comparison" src="https://github.com/user-attachments/assets/7f8c0173-ec15-40b8-9037-7834f43bf151" />
+
 
 ---
 
@@ -42,8 +43,6 @@ The transformer architecture, introduced by Vaswani et al. (2017), revolutionize
 The self attention mechanism computes three learned projections for each input token: queries, keys, and values. Attention weights are calculated as the softmax of scaled dot products between queries and keys, then used to weight the value vectors. This allows the model to dynamically determine which parts of the input are most relevant for each token's representation.
 
 Both DistilBERT and RoBERTa build on this foundation but with different design choices. DistilBERT (Sanh et al., 2019) uses knowledge distillation to create a smaller, faster model that retains 97% of BERT's performance with 40% fewer parameters. RoBERTa (Liu et al., 2019) improves on BERT through optimized pretraining, including longer training, larger batches, and removal of the next sentence prediction objective.
-
-**[INSERT GRAPHIC: Sample attention visualization from outputs/]**
 
 ### Transfer Learning and Fine Tuning
 
@@ -302,7 +301,7 @@ This performance level proves particularly valuable for high-cost interventions 
 
 ### Calibration Analysis
 
-**[INSERT GRAPHIC: calibration_curves.png - reliability diagrams for all models]**
+<img width="1482" height="1180" alt="calibration_curves (1)" src="https://github.com/user-attachments/assets/97cc280e-5f3c-48c5-90f7-355a7b754ecc" />
 
 Calibration curves plot predicted probabilities against empirical frequencies, revealing whether the model's confidence estimates align with reality. A perfectly calibrated model's predictions of X% probability should correspond to roughly X% of such cases being positive.
 
@@ -314,7 +313,7 @@ Well-calibrated probabilities enable threshold optimization for specific cost-be
 
 ### Inference Latency Comparison
 
-**[INSERT GRAPHIC: inference_latency_comparison.png - bar chart showing latency across models]**
+<img width="1482" height="882" alt="inference_latency_comparison" src="https://github.com/user-attachments/assets/d118e4a1-258a-4720-84a1-33f605ebe763" />
 
 Real-time applications require predictions within tight latency budgets. The following latencies represent average inference time per single review:
 
@@ -336,7 +335,7 @@ These measurements assume GPU inference (Tesla T4). CPU inference would increase
 
 ### Feature Importance from TF-IDF Coefficients
 
-**[INSERT GRAPHIC: key_churn_phrases.png - dual bar charts showing top churn vs no-churn words]**
+<img width="2385" height="1180" alt="key_churn_phrases" src="https://github.com/user-attachments/assets/9db9cf74-6a5a-426c-be11-9423a7cb761a" />
 
 The logistic regression baseline's learned coefficients reveal which words most strongly predict each class. Higher magnitude coefficients indicate stronger predictive power.
 
