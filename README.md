@@ -1,10 +1,4 @@
 # Predicting Customer Churn from Reviews Using Transformer Models
-
-**Author:** Ashley Stevens  
-**Course:** DSCI 552 Machine Learning for Data Science  
-**Institution:** University of Southern California  
-**Date:** December 2024
-
 ---
 
 ## Executive Summary
