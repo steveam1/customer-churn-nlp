@@ -1,4 +1,4 @@
-# Predicting Customer Churn from Reviews Using Transformer Models
+# Predicting Customer Churn from Yelp Reviews Using Transformer Models
 
 ## 1. Overview
 
