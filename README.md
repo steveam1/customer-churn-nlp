@@ -892,7 +892,12 @@ Without GPU (CPU only):
 
 ---
 
-## 12. Resource Links and References
+## 12. Conclusion
+
+This project demonstrates a complete end-to-end natural language processing pipeline for predicting customer churn from review text. By applying techniques taught in DSCI 552—including transformer architectures, attention mechanisms, transfer learning, comprehensive evaluation, and ethical considerations—the analysis achieves exceptional performance (98.7% AUC) while maintaining interpretability and fairness.
+
+
+## 13. Resource Links and References
 
 ### Research Papers
 
@@ -948,7 +953,7 @@ License: MIT License
 
 ---
 
-## 13. Repository Structure
+## 14. Repository Structure
 
 ```
 customer-churn-nlp/
@@ -981,35 +986,5 @@ customer-churn-nlp/
 ├── README.md                      # This file
 └── .gitignore                    # Git exclusions
 ```
-
----
-
-## 14. Conclusion
-
-This project demonstrates a complete end-to-end natural language processing pipeline for predicting customer churn from review text. By applying techniques taught in DSCI 552—including transformer architectures, attention mechanisms, transfer learning, comprehensive evaluation, and ethical considerations—the analysis achieves exceptional performance (98.7% AUC) while maintaining interpretability and fairness.
-
-### Key Achievements
-
-**Strong Performance:** RoBERTa achieves 98.7% AUC, substantially exceeding the 0.85 target  
-**Perfect Precision:** 100% accuracy on top 10% highest-risk predictions enables confident business decisions  
-**Real-Time Inference:** Sub-100ms latency suitable for production deployment  
-**Interpretability:** Attention and SHAP analyses validate linguistically meaningful patterns  
-**Fairness:** No concerning bias detected across review length categories  
-**Course Integration:** Every major component traces directly to DSCI 552 curriculum  
-
-### Technical Contributions
-
-- Demonstrates transformer superiority over classical NLP for context-dependent tasks
-- Validates transfer learning effectiveness for domain-specific classification
-- Provides interpretability framework for business stakeholder trust
-- Establishes rigorous evaluation methodology beyond simple accuracy
-
-### Business Value
-
-Organizations can deploy this framework to:
-- Identify at-risk customers before they churn
-- Prioritize retention resources on highest-value predictions
-- Understand dissatisfaction patterns through interpretable features
-- Reduce customer acquisition costs through improved retention
 
 ---
