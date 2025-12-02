@@ -1,33 +1,5 @@
 # Transformers for Customer Churn Prediction
 
-**Author:** Ashley Stevens  
-**Course:** DSCI 552 - Machine Learning for Data Science  
-**Institution:** University of Southern California  
-**Date:** December 2024
-
-**GitHub Repository:** https://github.com/yourusername/customer-churn-nlp
-
----
-
-## Table of Contents
-
-1. [Problem Statement](#1-problem-statement)
-2. [Connection to Course Content](#2-connection-to-course-content)
-3. [Methods and Techniques](#3-methods-and-techniques)
-4. [Code Demonstration](#4-code-demonstration)
-5. [Results and Visualizations](#5-results-and-visualizations)
-6. [Interpretability](#6-interpretability)
-7. [Bias and Fairness Analysis](#7-bias-and-fairness-analysis)
-8. [Impact, Insights, and Next Steps](#8-impact-insights-and-next-steps)
-9. [Model and Data Cards](#9-model-and-data-cards)
-10. [Streamlit Demo](#10-streamlit-demo)
-11. [Setup Instructions](#11-setup-instructions)
-12. [Resource Links and References](#12-resource-links-and-references)
-13. [Repository Structure](#13-repository-structure)
-14. [Conclusion](#14-conclusion)
-
----
-
 ## 1. Problem Statement
 
 Customer churn is one of the most serious issues for customer-facing companies. Losing customers is costly and often preventable when the signals are detected early. Customer reviews contain patterns that reveal dissatisfaction and frustration which often appear well before a customer leaves.
@@ -974,12 +946,6 @@ License: BSD 3-Clause
 https://github.com/slundberg/shap  
 License: MIT License
 
-### Course Materials
-
-**DSCI 552 - Machine Learning for Data Science**  
-University of Southern California  
-Viterbi School of Engineering
-
 ---
 
 ## 13. Repository Structure
@@ -990,9 +956,6 @@ customer-churn-nlp/
 ├── churn_model/
 │   ├── lr_model.pkl              # Trained logistic regression
 │   ├── tfidf_vectorizer.pkl      # Fitted TF-IDF vectorizer
-│   ├── distilbert/               # Fine-tuned DistilBERT (if saved)
-│   └── roberta/                  # Fine-tuned RoBERTa (if saved)
-│
 ├── outputs/
 │   ├── model_performance_comparison.png
 │   ├── roc_curves.png
@@ -1027,12 +990,12 @@ This project demonstrates a complete end-to-end natural language processing pipe
 
 ### Key Achievements
 
-✅ **Strong Performance:** RoBERTa achieves 98.7% AUC, substantially exceeding the 0.85 target  
-✅ **Perfect Precision:** 100% accuracy on top 10% highest-risk predictions enables confident business decisions  
-✅ **Real-Time Inference:** Sub-100ms latency suitable for production deployment  
-✅ **Interpretability:** Attention and SHAP analyses validate linguistically meaningful patterns  
-✅ **Fairness:** No concerning bias detected across review length categories  
-✅ **Course Integration:** Every major component traces directly to DSCI 552 curriculum  
+**Strong Performance:** RoBERTa achieves 98.7% AUC, substantially exceeding the 0.85 target  
+**Perfect Precision:** 100% accuracy on top 10% highest-risk predictions enables confident business decisions  
+**Real-Time Inference:** Sub-100ms latency suitable for production deployment  
+**Interpretability:** Attention and SHAP analyses validate linguistically meaningful patterns  
+**Fairness:** No concerning bias detected across review length categories  
+**Course Integration:** Every major component traces directly to DSCI 552 curriculum  
 
 ### Technical Contributions
 
@@ -1049,20 +1012,4 @@ Organizations can deploy this framework to:
 - Understand dissatisfaction patterns through interpretable features
 - Reduce customer acquisition costs through improved retention
 
-### Academic Rigor
-
-This project meets all requirements for demonstrating mastery of machine learning concepts:
-- Clear problem formulation with business context
-- Explicit connection to course curriculum (DSCI 552)
-- Rigorous experimental methodology with baselines
-- Comprehensive evaluation across multiple metrics
-- Ethical considerations and bias analysis
-- Complete documentation and reproducibility
-
 ---
-
-**Thank you for reviewing this project. All code, visualizations, and documentation demonstrate the practical application of techniques taught in DSCI 552 - Machine Learning for Data Science.**
-
----
-
-*For questions or feedback, please open an issue on the GitHub repository.*
