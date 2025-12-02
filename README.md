@@ -1,297 +1,360 @@
-# Predicting Customer Churn from Yelp Reviews Using Transformer Models
+# Transformers for Customer Churn Prediction
 
-## 1. Overview
+## Overview
 
-Businesses rely heavily on understanding customer satisfaction, yet it is difficult to manually review large volumes of customer feedback and identify who is at risk of leaving. Traditional keyword systems and simple sentiment rules often miss subtle cues in language, such as negation, sarcasm, or mixed sentiment.
+This project predicts whether a customer is at risk of churn based entirely on their written review. Customer feedback contains emotional clues, subtle expressions of frustration, and patterns that relate directly to long term loyalty. Automating the detection of churn risk allows companies to intervene earlier, prioritize the customers most likely to leave, and understand what issues consistently lead to lost loyalty.
 
-This project builds and evaluates machine learning models that classify whether a customer is likely to churn based solely on the text of their review. I compare a classical TF-IDF baseline with two modern transformer-based language models, DistilBERT and RoBERTa.
+I compare three different models:
 
-The results show that transformer models provide clear performance improvements, with RoBERTa achieving an AUC of 0.987 and reaching perfect precision on the top ten percent of high-risk predictions. These findings demonstrate both the practical value of advanced NLP models and their connection to core concepts from the course, such as self-attention, transfer learning, and model interpretability.
+- A classical natural language approach using TF IDF and logistic regression
+- A transformer based DistilBERT model that is fine tuned on the dataset
+- A transformer based RoBERTa model that is fine tuned and serves as the strongest performer
 
----
+Each model is evaluated using accuracy, precision, recall, F1 score, AUC, inference time, and performance on top decile identification. The project also includes interpretability using attention visualizations and SHAP, as well as a review length bias analysis and a complete model card.
 
-## 2. Problem Statement and Business Context
-
-Customer churn is expensive. Retaining a customer often costs far less than acquiring a new one, so organizations benefit from early identification of customers who are dissatisfied or thinking about switching providers.
-
-Companies collect thousands of reviews, but reviewing them manually is slow and inconsistent. Existing sentiment systems also fall short because:
-
-- Sentiment does not always equal churn
-- Keywords cannot capture the meaning of a phrase in context
-- Sarcasm, intensifiers, and negations drastically change meaning
-- Important business cues come from subtle language (for example, "not sure I will return" or "thinking about trying somewhere else")
-
-### Research Objectives
-
-The project aims to build a text-based churn classifier that:
-
-- Achieves an AUC of at least 0.85
-- Reaches at least 70 percent precision on the top ten percent of high-risk predictions
-- Meets real-time inference requirements with latency below 100 milliseconds
-
-The broader goal is to show how transformer-based NLP can support customer retention strategies with interpretable, efficient, and well-calibrated predictions.
+A working Streamlit demo is included to show how the model can be used interactively.
 
 ---
 
-## 3. Connection to Course Concepts
+## 1. Problem Statement
 
-This project directly applies many of the topics covered in class, including:
+Companies receive large volumes of customer reviews. Reading them manually is slow and inconsistent, and important early warning signals get missed. The central question guiding this project is:
 
-### Transformers and Self-Attention
+**Can transformer models accurately predict churn risk from raw review text with strong performance and low inference time**
 
-Transformers replace recurrence with self-attention. Each token can attend to every other token, allowing the model to capture long-range dependencies and nuanced semantic patterns. DistilBERT uses knowledge distillation to compress BERT, while RoBERTa improves pretraining for stronger performance.
+If the answer is yes, this system can support real business use cases such as:
 
-These ideas connect directly to course material on:
+- highlighting customers who need fast attention
+- ranking customers by risk level
+- identifying common themes behind abandonment
+- supporting customer success and retention teams
 
-- Query, key, and value projections
-- Multi-head self-attention
-- Positional encodings
-- Model scaling and efficiency
-- Transfer learning and fine-tuning
-
-### Formal Algorithms Concepts
-
-The project reinforces algorithmic ideas such as:
-
-- Complexity differences between classical models and transformers
-- Optimization through gradient descent
-- Regularization in logistic regression
-- Convergence and generalization
-
-### NLP Pipeline Concepts
-
-- Tokenization
-- Vectorization (TF-IDF)
-- Contextual embeddings
-- Classification head design
-- Evaluation metrics and calibration
-
-The final result ties together the entire course: algorithms, NLP, implementation, training, and real-world application.
+This project aims to turn unstructured text into actionable customer insight.
 
 ---
 
-## 4. Dataset and Label Construction
+## 2. Dataset and Preprocessing
 
-### Data Source
+The project uses the Yelp Polarity dataset. It includes labeled reviews that are mapped into churn and no churn:
 
-I use a ten thousand sample subset of the Yelp Polarity dataset from HuggingFace.
-The dataset includes written reviews with polarity labels.
+- negative sentiment equals churn risk
+- positive sentiment equals no churn risk
 
-- Negative reviews (one to two stars) map to churn
-- Positive reviews (four to five stars) map to no churn
-- Neutral three-star reviews are removed to form a clear binary problem
+The dataset used:
 
-The final dataset is balanced, with about fifty percent churn reviews.
+- 10000 training examples
+- 2000 testing examples
+- balanced classes
 
-### Data Splitting
-
-The sample is divided with stratified sampling:
-
-- Training: 80 percent (8,000 samples)
-- Validation: 10 percent (2,000 samples)
-- Test: 10 percent (2,000 samples)
-
-A fixed seed is used for reproducibility.
-
-### Data Card
-
-- **Features:** review text, churn label
-- **Language:** English
-- **Risks:** reviewer bias, slang or dialect variation, ambiguous text
-- **Limitations:** no metadata or behavioral churn information
+Tokenization for transformers uses padding and truncation up to a length of 128 tokens. The text is left mostly raw because transformer tokenizers handle normalization and subword encoding internally.
 
 ---
 
-## 5. Methodology
+## 3. Baseline Model: TF IDF Logistic Regression
 
-### Classical Baseline: TF-IDF with Logistic Regression
+The baseline model provides a strong benchmark. It uses:
 
-This model vectorizes text using unigrams and bigrams and trains a logistic regression classifier with balanced class weights. This provides a strong baseline for comparison and allows direct interpretation of word importance.
+- TF IDF features
+- one and two gram terms
+- a vocabulary capped at 5000 terms
+- logistic regression with balanced class weights
 
-### Transformer Models
+### Important churn related words from the baseline model
 
-Both transformer models are fine-tuned end to end on the churn classification task.
+<p align="center">
+  <img src="./outputs/key_churn_phrases.png" width="700">
+  <br>
+  <em>Key churn related phrases and their importance weights</em>
+</p>
 
-#### DistilBERT
-
-- Six-layer encoder
-- Around 66 million parameters
-- Designed for efficiency and faster inference
-
-#### RoBERTa
-
-- Twelve layers
-- Around 125 million parameters
-- Trained with improved pretraining objectives and more data
-- Expected to capture more nuanced language patterns
-
-### Training Configuration
-
-Training for both models uses:
-
-- Max sequence length of 128 tokens
-- Batch size of 32
-- Learning rate of 2e-5 with warmup
-- AdamW optimization
-- Early stopping based on validation performance
+This gives an intuitive sense of what a classical model considers risky or safe language.
 
 ---
 
-## 6. Evaluation and Results
+## 4. Transformer Models
+
+### DistilBERT
+
+A smaller and faster variant of BERT. It provides strong accuracy with faster inference. It is well suited for real time scenarios such as live customer support applications.
+
+### RoBERTa
+
+A stronger encoder that produces the best performance in this project. It has a slightly higher inference time but delivers excellent accuracy and AUC.
+
+Both models were fine tuned using:
+
+- three training epochs
+- AdamW optimizer
+- learning rate of 2e 5
+- mixed precision training
+- batch size of 32
+
+---
+
+## 5. Model Performance
+
+The models perform as follows:
+
+| Model | Accuracy | Precision | Recall | F1 Score | AUC | Inference Time |
+|-------|----------|-----------|--------|----------|-----|----------------|
+| TF IDF Logistic Regression | 0.9070 | 0.9110 | 0.8999 | 0.9054 | 0.9694 | 0.58 ms |
+| DistilBERT | 0.9155 | 0.9167 | 0.9120 | 0.9143 | 0.9721 | 5.61 ms |
+| RoBERTa | 0.9390 | 0.9313 | 0.9464 | 0.9388 | 0.9867 | 13.52 ms |
+
+The strongest performance comes from RoBERTa, which achieves excellent accuracy and robust AUC.
+
+### Performance Visualizations
+
+#### Model Comparison
+
+<p align="center">
+  <img src="./outputs/model_performance_comparison.png" width="650">
+</p>
+
+#### ROC Curves
+
+<p align="center">
+  <img src="./outputs/roc_curves.png" width="650">
+</p>
+
+#### Calibration Curves
+
+<p align="center">
+  <img src="./outputs/calibration_curves.png" width="650">
+</p>
+
+#### Inference Latency Comparison
+
+<p align="center">
+  <img src="./outputs/inference_latency_comparison.png" width="650">
+</p>
+
+---
+
+## 6. Confusion Matrices
+
+Confusion matrices show the balance between correct and incorrect predictions.
+
+<p align="center">
+  <img src="./outputs/confusion_matrices.png" width="700">
+  <br>
+  <em>Confusion matrices for all three models</em>
+</p>
+
+These demonstrate that the models do not show concerning imbalance or systematic bias in their predictions.
+
+---
+
+## 7. Top Ten Percent Precision
+
+Many business applications focus on the top group of customers who show the highest risk. This analysis looks at the precision for the top ten percent of predicted churn probabilities.
+
+<p align="center">
+  <img src="./outputs/top10_precision.png" width="600">
+</p>
+
+Results:
+
+- Baseline: 99 percent
+- DistilBERT: 100 percent
+- RoBERTa: 100 percent
+
+This shows that all models are excellent at ranking the highest risk customers.
+
+---
+
+## 8. Interpretability
+
+Interpretability supports trust in model predictions and helps show which words or phrases influence the classification.
+
+### Attention Visualizations
+
+<p align="center">
+  <img src="./outputs/attention_example_1.png" width="650">
+  <br>
+  <em>Example of attention focus for a high risk review</em>
+</p>
+
+<p align="center">
+  <img src="./outputs/attention_example_2.png" width="650">
+  <br>
+  <em>Example of attention focus for a no risk review</em>
+</p>
+
+These visualizations highlight the phrases that the transformer finds important.
+
+### SHAP Explanations
+
+<p align="center">
+  <img src="./outputs/shap_example.png" width="650">
+  <br>
+  <em>SHAP values showing token contributions toward churn risk</em>
+</p>
+
+SHAP provides a clear explanation of how each word contributes to a prediction.
+
+---
+
+## 9. Bias Analysis
+
+Bias is evaluated by review length. This checks whether the model performs differently based on how long a review is.
+
+<p align="center">
+  <img src="./outputs/bias_analysis.png" width="650">
+  <br>
+  <em>Review length accuracy analysis</em>
+</p>
+
+The maximum difference across groups is eight percent. This is within the safe range defined for this project, so no major bias concern is identified.
+
+---
+
+## 10. Misclassification Review
+
+A detailed review of incorrect predictions reveals the following common patterns:
+
+- mixed emotion reviews
+- reviews with long stories that bury sentiment
+- short sarcastic comments
+- ambiguous sentiment phrases
+
+These insights help identify future directions for improvement.
+
+---
+
+## 11. Streamlit Demo
+
+A working Streamlit demo is included at:
+
+```
+streamlit_app/app.py
+```
+
+To run the demo:
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app/app.py
+```
+
+This launches an interactive interface where you can paste a review and choose a model. The demo outputs the churn probability and a classification decision.
+
+---
+
+## 12. Model Card
+
+### Model Name
+
+DistilBERT and RoBERTa for churn classification
+
+### Intended Use
+
+Predicting churn risk from customer review text
+
+### Input
+
+Raw customer review text up to 128 tokens
+
+### Output
+
+- Binary churn classification and probability score
 
 ### Performance Summary
 
-| Metric | TF-IDF + Logistic Regression | DistilBERT | RoBERTa |
-|--------|------------------------------|------------|---------|
-| Accuracy | 90.7% | 91.6% | 93.9% |
-| Precision | 91.1% | 91.7% | 93.1% |
-| Recall | 90.0% | 91.2% | 94.6% |
-| F1 Score | 90.5% | 91.4% | 93.9% |
-| AUC | 96.9% | 97.2% | 98.7% |
-
-RoBERTa achieves the strongest performance overall, especially in recall and AUC, which indicate stronger ability to identify churn.
-
-### Model Performance Comparison
-
-![Model Performance Comparison](outputs/model_performance_comparison.png)
-
-### ROC Curves
-
-![ROC Curves](outputs/roc_curves.png)
-
-### Confusion Matrices
-
-![Confusion Matrices](outputs/confusion_matrices.png)
-
-### Top Ten Percent Precision
-
-DistilBERT and RoBERTa both reach 100 percent precision in the top ten percent of predicted churn risk, which far exceeds the seventy percent target.
-
-![Top 10% Precision](outputs/top10_precision.png)
-
-### Calibration Curves
-
-Both transformer models produce well-calibrated probabilities, which is important for making threshold-based business decisions.
-
-![Calibration Curves](outputs/calibration_curves.png)
-
-### Inference Latency
-
-All models meet the one hundred millisecond latency requirement, and DistilBERT provides a good balance between accuracy and running time.
-
-![Inference Latency](outputs/inference_latency_comparison.png)
-
----
-
-## 7. Interpretability
-
-### TF-IDF Word Importance
-
-These coefficients highlight which words drive predictions. Negations and extreme negative adjectives strongly indicate churn, while emotional and superlative terms indicate loyalty.
-
-![Key Churn Phrases](outputs/key_churn_phrases.png)
-
-### Attention Patterns
-
-Attention visualizations reveal how the models use context. Examples show:
-
-- Strong attention between negation words and the sentiment they reverse
-- High weights linking intensifiers with their modified words
-- Cross-sentence and long-span dependencies in longer reviews
-
-These patterns help validate that the model is focusing on meaningful linguistic cues.
-
----
-
-## 8. Critical Analysis
-
-### What the Results Reveal
-
-- Transformers clearly outperform classical models on nuanced language
-- The TF-IDF model is surprisingly strong, which suggests sentiment is a strong proxy for churn
-- RoBERTa's higher capacity allows it to capture more subtle patterns
-- The models show no major length bias, although very long reviews still pose challenges
-- High top decile precision indicates the models are especially reliable when used for targeted interventions
-
-### Limitations
-
-- Labels are based on sentiment rather than observed churn behavior
-- Yelp reviewers are not representative of all customer groups
-- Only English text is included
-- No customer metadata or business context is used
-- Real-world deployment requires ongoing monitoring and fairness audits
+- AUC up to 0.9867
+- F1 score up to 0.9388
+- Top ten percent precision of 100 percent for transformer models
 
 ### Ethical Considerations
 
-Models may behave differently across dialects, writing styles, or demographic groups. For responsible use:
+The dataset does not contain demographic attributes so demographic bias cannot be evaluated. The sentiment based labels act only as a proxy for true churn behavior. The model may misinterpret sarcasm, slang, or highly ambiguous text.
 
-- Predictions should support, not replace, human decision making
-- Businesses should avoid using the model for punitive actions
-- Regular audits should check for unintentional bias
-- Probabilities should be presented with uncertainty awareness
+### Limitations
 
----
-
-## 9. How to Run the Project
-
-1. Clone the repository
-2. Install dependencies with `pip install -r requirements.txt`
-3. Open the notebook `Churn_Prediction.ipynb`
-4. Select GPU runtime if using Colab
-5. Run all cells to reproduce results
-6. Saved outputs will appear in the `outputs/` folder
+The model is trained on sentiment mapped churn labels, not real churn events. It may not generalize to other domains without further tuning.
 
 ---
 
-## 10. Repository Structure
+## 13. Data Card
+
+### Dataset
+
+Yelp Polarity Dataset
+
+### Labeling
+
+- Positive reviews mapped to no churn
+- Negative reviews mapped to churn
+
+### Distribution
+
+Balanced classes in training and test sets
+
+### Notes
+
+Sentiment is only a proxy for churn. No demographic information is available in the dataset.
+
+---
+
+## 14. Critical Analysis
+
+Transformers significantly outperform the classical model while maintaining low inference times. RoBERTa performs particularly well and provides strong ranking ability in top decile analysis.
+
+Interpretability helps clarify how predictions are made, and bias analysis shows consistent performance across review length categories. The primary limitation is that sentiment labels are not true churn labels. Real world deployment would require training on actual churn outcomes and more diverse customer behavior data.
+
+---
+
+## 15. Next Steps
+
+Future improvements include:
+
+- training on real churn behavior
+- incorporating structured customer data
+- adding time based features
+- applying topic modeling to identify common dissatisfaction themes
+- evaluating multilingual reviews
+- building an end to end dashboard including volume trends, reasons for churn, and customer attributes
+
+---
+
+## 16. Repository Structure
 
 ```
-churn_model/
-    distilbert/                # Fine-tuned DistilBERT model
-    roberta/                   # Fine-tuned RoBERTa model
-    lr_model.pkl               # TF-IDF logistic regression model
-    tfidf_vectorizer.pkl       # Vocabulary and vectorizer
-
-outputs/
-    roc_curves.png
-    confusion_matrices.png
-    model_performance_comparison.png
-    calibration_curves.png
-    top10_precision.png
-    key_churn_phrases.png
-    inference_latency_comparison.png
-
-data/
-    model_comparison.csv
-    training_summary.json
-
-Churn_Prediction.ipynb
-README.md
-REFERENCES.md
-requirements.txt
+project_root/
+│
+├── churn_model/
+│   ├── lr_model.pkl
+│   ├── tfidf_vectorizer.pkl
+│
+├── data/
+│   ├── model_comparison.csv
+│   ├── training_summary.json
+│
+├── outputs/
+│   ├── calibration_curves.png
+│   ├── confusion_matrices.png
+│   ├── inference_latency_comparison.png
+│   ├── key_churn_phrases.png
+│   ├── model_performance_comparison.png
+│   ├── roc_curves.png
+│   ├── top10_precision.png
+│   ├── bias_analysis.png
+│   ├── attention_example_1.png
+│   ├── attention_example_2.png
+│   ├── shap_example.png
+│
+├── streamlit_app/
+│   ├── app.py
+│
+├── requirements.txt
+├── Churn_Prediction.ipynb
+└── README.md
 ```
 
 ---
 
-## 11. Conclusion
+## Conclusion
 
-This project demonstrates that transformer models offer meaningful improvements in churn prediction from review text. RoBERTa delivers the strongest performance, achieving an AUC of 0.987 and perfect precision for the highest-risk customers.
-
-The analysis ties together key course concepts, including self-attention, transfer learning, algorithmic complexity, and evaluation methods. It also emphasizes interpretability, fairness, and practical deployment considerations.
-
-Although the dataset presents limitations, the results show clear value in applying transformer-based NLP to real business challenges. Future work could incorporate verified churn labels, additional data sources, multilingual text, or more advanced explainability tools.
-
----
-
-## References
-
-See [REFERENCES.md](REFERENCES.md) for complete citations and acknowledgments.
-
----
-
-**Author:** Ashley Stevens  
-**Course:** DSCI 552 - Machine Learning for Data Science  
-**Institution:** University of Southern California  
-**Date:** December 2024
+This project demonstrates how transformer models turn raw customer text into accurate and meaningful churn predictions. With strong performance, thoughtful interpretability, a working demo, and complete documentation, this project shows both technical skill and practical business relevance.
 
 
