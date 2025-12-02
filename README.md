@@ -60,12 +60,6 @@ The end result is a complete natural language churn prediction framework plus an
 
 ---
 
-## 2. Connection to Course Content
-
-This project applies core concepts from generative AI and machine learning: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
-
----
-
 ## 3. Methods and Techniques
 
 ### Data Source
