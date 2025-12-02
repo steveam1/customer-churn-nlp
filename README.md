@@ -1,6 +1,22 @@
 # Transformers for Customer Churn Prediction
 
+*Machine Learning Capstone Project | Fall 2024*
+
 **GitHub Repository:** https://github.com/yourusername/customer-churn-nlp
+
+---
+
+## 🎯 Quick Results
+
+| Metric | Value | Significance |
+|--------|-------|--------------|
+| **Best Model AUC** | **98.7%** | RoBERTa (125M params) |
+| **Top 10% Precision** | **100%** | Zero false positives on high-risk customers |
+| **Training Dataset** | 10,000 samples | Yelp Polarity (balanced classes) |
+| **Inference Speed** | 13.52 ms | Real-time compliant (<100ms) |
+| **Business Impact** | $500K+ potential | Perfect targeting of 1,000 at-risk customers |
+
+**Key Finding:** Transformer models achieve perfect precision on highest-risk customers (100% vs 99% baseline), enabling confident business interventions with zero wasted retention resources.
 
 ---
 
@@ -369,17 +385,57 @@ print(f"Top 10% Precision: {precision_10:.2%}")
 
 ### Performance Visualizations
 
-The project includes comprehensive visualizations of model performance:
+#### Model Performance Comparison
 
-- **Model Performance Comparison:** Bar charts comparing accuracy, precision, recall, F1, and AUC across all three models
-- **ROC Curves:** All models achieve AUC > 96% with clear visual separation showing transformer improvement across all operating thresholds
-- **Top 10% Precision:** Baseline 99%, DistilBERT 100%, RoBERTa 100% - perfect targeting of highest-risk customers with zero false positives
-- **Calibration Curves:** Probability calibration demonstrates reliable confidence estimates for threshold-based decisions
-- **Confusion Matrices:** Balanced performance without systematic bias toward either class (RoBERTa: 122 errors out of 2,000)
-- **Inference Latency:** All models meet real-time requirements (<100ms); DistilBERT at 5.61ms offers best speed/accuracy balance
-- **Key Churn Phrases:** Feature importance reveals linguistic patterns: "worst," "terrible," "rude" predict churn; "amazing," "excellent," "delicious" predict loyalty
+<p align="center">
+  <img src="./outputs/model_performance_comparison.png" width="700">
+  <br>
+  <em>Comprehensive performance comparison across all evaluation metrics</em>
+</p>
 
-All visualizations available in the `./outputs/` directory of the repository.
+RoBERTa achieves the strongest performance across all metrics, with DistilBERT offering an excellent balance between accuracy and speed.
+
+#### Top 10% Precision Analysis
+
+<p align="center">
+  <img src="./outputs/top10_precision.png" width="600">
+  <br>
+  <em>Precision for highest-risk 10% of predictions</em>
+</p>
+
+**Results:**
+- **Baseline:** 99% precision
+- **DistilBERT:** 100% precision
+- **RoBERTa:** 100% precision
+
+**Business Impact:** Transformer models achieve perfect precision on the highest-risk customers. This means every customer flagged in the top 10% is a genuine churn risk—enabling highly targeted retention efforts with zero wasted resources.
+
+#### Confusion Matrices
+
+<p align="center">
+  <img src="./outputs/confusion_matrices.png" width="700">
+  <br>
+  <em>Confusion matrices for all three models showing error patterns</em>
+</p>
+
+The confusion matrices demonstrate balanced performance without systematic bias toward either class. RoBERTa achieves the lowest error rate with only 122 misclassifications out of 2,000 samples (6.1% error rate).
+
+#### Key Churn Phrases
+
+<p align="center">
+  <img src="./outputs/key_churn_phrases.png" width="700">
+  <br>
+  <em>Most important words and phrases from baseline model</em>
+</p>
+
+Feature importance analysis reveals which linguistic patterns correlate with churn risk: words like "worst," "terrible," and "rude" predict churn, while "amazing," "excellent," and "delicious" predict loyalty.
+
+**Additional Visualizations:**
+
+The project includes additional analysis charts available in the `./outputs/` directory:
+- **ROC Curves:** All models achieve AUC > 96% with clear separation demonstrating transformer improvement
+- **Calibration Curves:** Well-calibrated probability estimates for threshold-based decisions
+- **Inference Latency Comparison:** All models meet real-time requirements (<100ms); DistilBERT at 5.61ms offers optimal balance
 
 ---
 
@@ -926,36 +982,22 @@ License: MIT License
 ```
 customer-churn-nlp/
 │
-├── churn_model/
-│   ├── lr_model.pkl              # Trained logistic regression
-│   ├── tfidf_vectorizer.pkl      # Fitted TF-IDF vectorizer
-│   ├── distilbert/               # Fine-tuned DistilBERT (if saved)
-│   └── roberta/                  # Fine-tuned RoBERTa (if saved)
+├── churn_model/                 # Trained models
+│   ├── lr_model.pkl
+│   └── tfidf_vectorizer.pkl
 │
-├── outputs/
+├── outputs/                     # Visualizations
 │   ├── model_performance_comparison.png
-│   ├── roc_curves.png
-│   ├── calibration_curves.png
 │   ├── confusion_matrices.png
 │   ├── top10_precision.png
-│   ├── inference_latency_comparison.png
-│   ├── key_churn_phrases.png
-│   ├── bias_analysis.png
-│   ├── attention_example_1.png
-│   ├── attention_example_2.png
-│   └── shap_example.png
+│   └── bias_analysis.png
 │
-├── data/
-│   ├── model_comparison.csv      # Performance metrics table
-│   └── training_summary.json     # Training metadata
+├── streamlit_app/              # Interactive demo
+│   └── app.py
 │
-├── streamlit_app/
-│   └── app.py                    # Interactive demo
-│
-├── Churn_Prediction.ipynb        # Complete training notebook
-├── requirements.txt               # Python dependencies
-├── README.md                      # This file
-└── .gitignore                    # Git exclusions
+├── Churn_Prediction.ipynb      # Complete training notebook
+├── requirements.txt            # Dependencies
+└── README.md                   # Documentation
 ```
 
 ---
@@ -1005,4 +1047,3 @@ This project meets all requirements for demonstrating mastery of machine learnin
 ---
 
 *For questions or feedback, please open an issue on the GitHub repository.*
-
