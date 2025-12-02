@@ -1,32 +1,5 @@
 # Transformers for Customer Churn Prediction
-
-**Author:** Ashley Stevens  
-**Course:** DSCI 552 - Machine Learning for Data Science  
-**Institution:** University of Southern California  
-**Date:** December 2024
-
-**GitHub Repository:** https://github.com/yourusername/customer-churn-nlp
-
----
-
-## Table of Contents
-
-1. [Problem Statement](#1-problem-statement)
-2. [Connection to Course Content](#2-connection-to-course-content)
-3. [Methods and Techniques](#3-methods-and-techniques)
-4. [Code Demonstration](#4-code-demonstration)
-5. [Results and Visualizations](#5-results-and-visualizations)
-6. [Interpretability](#6-interpretability)
-7. [Bias and Fairness Analysis](#7-bias-and-fairness-analysis)
-8. [Impact, Insights, and Next Steps](#8-impact-insights-and-next-steps)
-9. [Model and Data Cards](#9-model-and-data-cards)
-10. [Streamlit Demo](#10-streamlit-demo)
-11. [Setup Instructions](#11-setup-instructions)
-12. [Resource Links and References](#12-resource-links-and-references)
-13. [Repository Structure](#13-repository-structure)
-14. [Conclusion](#14-conclusion)
-
----
+--
 
 ## 1. Problem Statement
 
