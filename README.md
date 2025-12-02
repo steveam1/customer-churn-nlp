@@ -4,7 +4,7 @@
 
 Customer churn is one of the most serious issues for customer-facing companies. Losing customers is costly and often preventable when the signals are detected early. Customer reviews contain patterns that reveal dissatisfaction and frustration which often appear well before a customer leaves.
 
-The goal of this project is to determine whether churn risk can be predicted directly from customer review text using models covered in DSCI 552.
+The goal of this project is to determine whether churn risk can be predicted directly from customer review text using models.
 
 ### Problem Question
 
@@ -26,7 +26,7 @@ The end result is a complete natural language churn prediction framework plus an
 
 ## 2. Connection to Course Content
 
-This project applies core concepts from **DSCI 552 - Machine Learning for Data Science**: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
+This project applies core concepts from Gen AI Models in Theory Practice: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
 
 ---
 
