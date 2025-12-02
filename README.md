@@ -1,5 +1,33 @@
 # Transformers for Customer Churn Prediction
 
+**Author:** Ashley Stevens  
+**Course:** DSCI 552 - Machine Learning for Data Science  
+**Institution:** University of Southern California  
+**Date:** December 2024
+
+**GitHub Repository:** https://github.com/yourusername/customer-churn-nlp
+
+---
+
+## Table of Contents
+
+1. [Problem Statement](#1-problem-statement)
+2. [Connection to Course Content](#2-connection-to-course-content)
+3. [Methods and Techniques](#3-methods-and-techniques)
+4. [Code Demonstration](#4-code-demonstration)
+5. [Results and Visualizations](#5-results-and-visualizations)
+6. [Interpretability](#6-interpretability)
+7. [Bias and Fairness Analysis](#7-bias-and-fairness-analysis)
+8. [Impact, Insights, and Next Steps](#8-impact-insights-and-next-steps)
+9. [Model and Data Cards](#9-model-and-data-cards)
+10. [Streamlit Demo](#10-streamlit-demo)
+11. [Setup Instructions](#11-setup-instructions)
+12. [Resource Links and References](#12-resource-links-and-references)
+13. [Repository Structure](#13-repository-structure)
+14. [Conclusion](#14-conclusion)
+
+---
+
 ## 1. Problem Statement
 
 Customer churn is one of the most serious issues for customer-facing companies. Losing customers is costly and often preventable when the signals are detected early. Customer reviews contain patterns that reveal dissatisfaction and frustration which often appear well before a customer leaves.
@@ -26,52 +54,7 @@ The end result is a complete natural language churn prediction framework plus an
 
 ## 2. Connection to Course Content
 
-This project directly applies core concepts from **DSCI 552 - Machine Learning for Data Science**, demonstrating mastery of advanced natural language processing techniques covered in the curriculum.
-
-### Course Modules Applied
-
-#### **Transformer Architecture and Attention Mechanisms (Module: Neural Language Models)**
-
-The self-attention mechanism from Vaswani et al. (2017), covered in transformer lectures, allows each token to attend to all other tokens in the sequence. This captures long-range dependencies and context-dependent meaning that recurrent models struggle with. 
-
-- Multi-head attention with learned query (Q), key (K), and value (V) projections as taught in class
-- Positional encodings for sequence understanding
-- Layer normalization and residual connections discussed in neural network lectures
-- DistilBERT: 6-layer encoder using knowledge distillation (covered in model compression module)
-- RoBERTa: 12-layer encoder with optimized pretraining (discussed in advanced transformer lectures)
-
-#### **Transfer Learning and Fine-Tuning (Module: Pretrained Models)**
-
-Following the transfer learning framework taught in class, this project leverages models pretrained on billions of tokens rather than training from scratch. The fine-tuning approach applies gradient-based optimization on the labeled churn dataset while starting from pretrained weights—implementing the domain adaptation methodology emphasized in course lectures.
-
-#### **Classical NLP Techniques (Module: Text Processing and Feature Engineering)**
-
-- TF-IDF vectorization with n-gram features as taught in feature extraction lectures
-- Term frequency and inverse document frequency calculations
-- Logistic regression as a strong baseline for comparison
-- Sparse matrix representations for computational efficiency
-
-#### **Comprehensive Model Evaluation (Module: Performance Metrics and Model Selection)**
-
-The evaluation strategy implements the multi-metric assessment framework from class:
-- **ROC/AUC:** Threshold-independent ranking performance as taught in classification evaluation lectures
-- **Precision-Recall Tradeoffs:** Business-oriented metrics for cost-sensitive decisions
-- **Calibration Curves:** Probability reliability assessment following course best practices
-- **Confusion Matrices:** Complete error pattern analysis
-- **Top-K Metrics:** Real-world deployment scenarios emphasizing high-stakes predictions
-
-#### **Optimization Techniques (Module: Training Deep Neural Networks)**
-
-- AdamW optimizer with learning rate warmup and weight decay, applying training strategies covered in neural network optimization lectures
-- Early stopping for implicit regularization
-- Mixed-precision (FP16) training demonstrating computational efficiency techniques discussed in class
-- Batch normalization and gradient clipping
-
-#### **Ethical AI and Fairness (Module: Bias Detection and Responsible ML)**
-
-Following the fairness assessment methodology taught in class, systematic bias detection examines performance across review length categories. The analysis includes transparency requirements, appropriate use case documentation, and responsible deployment guidelines—all principles emphasized in the course's ethical AI module.
-
-**All techniques, theories, and evaluation methods align directly with topics taught in DSCI 552 lectures.**
+This project applies core concepts from **DSCI 552 - Machine Learning for Data Science**: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
 
 ---
 
@@ -123,8 +106,6 @@ The **Yelp Polarity dataset** is loaded from HuggingFace. This widely-used bench
 - SHAP (SHapley Additive exPlanations)
 - Feature importance from baseline model
 
-**All techniques are part of the DSCI 552 framework taught in class.**
-
 ---
 
 ## 4. Code Demonstration
@@ -165,7 +146,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, roc_auc_score
 
-# TF-IDF vectorization (course: feature engineering module)
+# TF-IDF vectorization
 vectorizer = TfidfVectorizer(
     ngram_range=(1, 2),  # Unigrams and bigrams
     max_features=5000,   # Vocabulary size
@@ -221,13 +202,13 @@ from transformers import AutoTokenizer
 distilbert_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 roberta_tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 
-# Tokenization function (course: NLP preprocessing module)
+# Tokenization function
 def tokenize(batch):
     return distilbert_tokenizer(
         batch["text"],
         truncation=True,
         padding="max_length",
-        max_length=128  # Sequence length from course guidelines
+        max_length=128
     )
 
 # Apply to dataset
@@ -248,7 +229,7 @@ precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 f1 = evaluate.load("f1")
 
-# Metrics computation (course: model evaluation module)
+# Metrics computation
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
@@ -259,24 +240,24 @@ def compute_metrics(eval_pred):
         "f1": f1.compute(predictions=predictions, references=labels)["f1"],
     }
 
-# Load pretrained DistilBERT (course: transfer learning module)
+# Load pretrained DistilBERT
 model = AutoModelForSequenceClassification.from_pretrained(
     "distilbert-base-uncased",
     num_labels=2
 )
 
-# Training configuration (course: optimization module)
+# Training configuration
 training_args = TrainingArguments(
     output_dir="distilbert_output",
-    learning_rate=2e-5,              # Standard for transformers
+    learning_rate=2e-5,
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     evaluation_strategy="epoch",
     save_strategy="epoch",
     num_train_epochs=3,
-    weight_decay=0.01,               # L2 regularization
-    warmup_steps=500,                # Learning rate warmup
-    fp16=True,                       # Mixed precision training
+    weight_decay=0.01,
+    warmup_steps=500,
+    fp16=True,
     load_best_model_at_end=True,
     metric_for_best_model="f1",
 )
@@ -297,7 +278,7 @@ trainer.train()
 ### 4.6 Fine-Tuning RoBERTa
 
 ```python
-# Load RoBERTa (course: advanced transformer architectures)
+# Load RoBERTa
 roberta_model = AutoModelForSequenceClassification.from_pretrained(
     "roberta-base",
     num_labels=2
@@ -513,7 +494,7 @@ Attention heatmaps reveal which tokens the transformer focuses on when making pr
 - Long-range dependencies spanning multiple sentences
 - Focus on business-relevant phrases like "never coming back" or "highly recommend"
 
-This validates that the model captures linguistically meaningful patterns emphasized in course lectures on attention mechanisms.
+This validates that the model captures linguistically meaningful patterns.
 
 ### SHAP Explanations
 
@@ -523,13 +504,13 @@ This validates that the model captures linguistically meaningful patterns emphas
   <em>SHAP values showing token-level contributions to prediction</em>
 </p>
 
-SHAP (SHapley Additive exPlanations) provides token-level attribution, showing exactly which words push predictions toward churn or no-churn. This interpretability method, covered in the course's explainable AI module, builds stakeholder trust in model decisions.
+SHAP (SHapley Additive exPlanations) provides token-level attribution, showing exactly which words push predictions toward churn or no-churn. This interpretability method builds stakeholder trust in model decisions.
 
 ---
 
 ## 7. Bias and Fairness Analysis
 
-Following the fairness assessment methodology taught in DSCI 552's ethical AI module, systematic bias detection examines model performance across population subgroups.
+Following the fairness assessment methodology taught in DSCI 552, systematic bias detection examines model performance across population subgroups.
 
 <p align="center">
   <img src="./outputs/bias_analysis.png" width="700">
@@ -999,14 +980,6 @@ License: MIT License
 University of Southern California  
 Viterbi School of Engineering
 
-**Course Topics Applied:**
-- Transformer architectures and attention mechanisms
-- Transfer learning and fine-tuning
-- Model evaluation and performance metrics
-- Ethical AI and bias detection
-- NLP pipelines and tokenization strategies
-- Interpretability and explainable AI
-
 ---
 
 ## 13. Repository Structure
@@ -1043,7 +1016,6 @@ customer-churn-nlp/
 ├── Churn_Prediction.ipynb        # Complete training notebook
 ├── requirements.txt               # Python dependencies
 ├── README.md                      # This file
-├── REFERENCES.md                  # Detailed citations
 └── .gitignore                    # Git exclusions
 ```
 
