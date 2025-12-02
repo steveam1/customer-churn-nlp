@@ -1,10 +1,11 @@
 # Transformers for Customer Churn Prediction
+---
 
 ## 1. Problem Statement
 
 Customer churn is one of the most serious issues for customer-facing companies. Losing customers is costly and often preventable when the signals are detected early. Customer reviews contain patterns that reveal dissatisfaction and frustration which often appear well before a customer leaves.
 
-The goal of this project is to determine whether churn risk can be predicted directly from customer review text using models.
+The goal of this project is to determine whether churn risk can be predicted directly from customer review text using models covered in DSCI 552.
 
 ### Problem Question
 
@@ -26,7 +27,7 @@ The end result is a complete natural language churn prediction framework plus an
 
 ## 2. Connection to Course Content
 
-This project applies core concepts from Gen AI Models in Theory Practice: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
+This project applies core concepts from **DSCI 552 - Machine Learning for Data Science**: transformer architecture with self-attention (Module: Neural Language Models), transfer learning through fine-tuning pretrained models (Module: Pretrained Models), comprehensive evaluation with ROC/AUC and calibration metrics (Module: Performance Metrics), and systematic bias detection (Module: Ethical AI). All techniques align directly with course curriculum.
 
 ---
 
@@ -480,7 +481,55 @@ SHAP (SHapley Additive exPlanations) provides token-level attribution, showing e
 
 ---
 
-## 7. Bias and Fairness Analysis
+## 7. Misclassification Analysis
+
+Understanding model errors provides insights into limitations and improvement opportunities.
+
+### DistilBERT Error Summary
+
+**Overall Error Rate:** 169 / 2,000 (8.5%)
+- **False Positives:** 82 (predicted churn, actually loyal)
+- **False Negatives:** 87 (predicted loyal, actually churned)
+
+### Example False Positives
+
+**Case 1** (Confidence: 97.05%)
+> "relaxing, very good location. little cramped with small tables..."
+
+**Analysis:** Model focused on "cramped" and "small" as negative signals, missing the overall positive tone ("relaxing," "very good").
+
+**Case 2** (Confidence: 95.62%)
+> "The non-sushi items were pretty impressive! I had a white fish taco that was absolutely delicious! The decor is pretty and the mood is very nice..."
+
+**Analysis:** Despite clearly positive language ("impressive," "absolutely delicious"), the model incorrectly predicted churn—indicating rare edge cases where very positive reviews misclassify.
+
+### Example False Negatives
+
+**Case 1** (Confidence: 64.63%)
+> "Nightclub rating only... We got lucky because we happened to arrive during Kris Humphries' bachelor party..."
+
+**Analysis:** Event-specific context (bachelor party) doesn't reflect typical experience. Lower confidence (64.63%) suggests model uncertainty about mixed-sentiment, context-dependent reviews.
+
+**Case 2** (Confidence: 94.68%)
+> "Great double date place that allowed us to bring our dogs to sit at the table outside with us. Although it took a long time to get a table, the beer..."
+
+**Analysis:** Positive framing ("Great," "allowed us to bring our dogs") overshadowed the complaint "took a long time." Mixed-sentiment reviews challenge the model.
+
+### Key Insights
+
+1. **Mixed sentiment is challenging** - Reviews with both positive and negative elements confuse the model
+2. **Context-dependent language** - Event-specific or situational reviews don't reflect general experience
+3. **Confidence correlates with difficulty** - Lower confidence (60-75%) indicates ambiguous cases
+
+### Deployment Recommendations
+
+- Flag predictions with 60-75% confidence for human review
+- Consider ensemble methods for mixed-sentiment cases
+- Implement confidence thresholds before automated actions
+
+---
+
+## 8. Bias and Fairness Analysis
 
 Following the fairness assessment methodology taught in DSCI 552, systematic bias detection examines model performance across population subgroups.
 
@@ -515,7 +564,7 @@ Following the fairness assessment methodology taught in DSCI 552, systematic bia
 
 ---
 
-## 8. Impact, Insights, and Next Steps
+## 9. Impact, Insights, and Next Steps
 
 ### Impact
 
@@ -553,7 +602,7 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 ---
 
-## 9. Model and Data Cards
+## 10. Model and Data Cards
 
 ### Model Card
 
@@ -785,7 +834,7 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 ---
 
-## 10. Streamlit Demo
+## 11. Streamlit Demo
 
 A working interactive demonstration is included to show real-time churn prediction.
 
@@ -823,7 +872,7 @@ The demo uses the saved baseline model for fast, CPU-based inference. Transforme
 
 ---
 
-## 11. Setup Instructions
+## 12. Setup Instructions
 
 ### Prerequisites
 
@@ -892,11 +941,6 @@ Without GPU (CPU only):
 
 ---
 
-## 12. Conclusion
-
-This project demonstrates a complete end-to-end natural language processing pipeline for predicting customer churn from review text. By applying techniques taught in DSCI 552—including transformer architectures, attention mechanisms, transfer learning, comprehensive evaluation, and ethical considerations—the analysis achieves exceptional performance (98.7% AUC) while maintaining interpretability and fairness.
-
-
 ## 13. Resource Links and References
 
 ### Research Papers
@@ -951,6 +995,12 @@ License: BSD 3-Clause
 https://github.com/slundberg/shap  
 License: MIT License
 
+### Course Materials
+
+**DSCI 552 - Machine Learning for Data Science**  
+University of Southern California  
+Viterbi School of Engineering
+
 ---
 
 ## 14. Repository Structure
@@ -961,6 +1011,9 @@ customer-churn-nlp/
 ├── churn_model/
 │   ├── lr_model.pkl              # Trained logistic regression
 │   ├── tfidf_vectorizer.pkl      # Fitted TF-IDF vectorizer
+│   ├── distilbert/               # Fine-tuned DistilBERT (if saved)
+│   └── roberta/                  # Fine-tuned RoBERTa (if saved)
+│
 ├── outputs/
 │   ├── model_performance_comparison.png
 │   ├── roc_curves.png
@@ -988,3 +1041,8 @@ customer-churn-nlp/
 ```
 
 ---
+
+## 14. Conclusion
+
+This project demonstrates a complete end-to-end natural language processing pipeline for predicting customer churn from review text. By applying techniques taught in DSCI 552—including transformer architectures, attention mechanisms, transfer learning, comprehensive evaluation, and ethical considerations—the analysis achieves exceptional performance (98.7% AUC) while maintaining interpretability and fairness.
+
