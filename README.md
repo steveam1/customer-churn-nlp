@@ -6,20 +6,6 @@
 
 ---
 
-## 🎯 Quick Results
-
-| Metric | Value | Significance |
-|--------|-------|--------------|
-| **Best Model AUC** | **98.7%** | RoBERTa (125M params) |
-| **Top 10% Precision** | **100%** | Zero false positives on high-risk customers |
-| **Training Dataset** | 10,000 samples | Yelp Polarity (balanced classes) |
-| **Inference Speed** | 13.52 ms | Real-time compliant (<100ms) |
-| **Business Impact** | $500K+ potential | Perfect targeting of 1,000 at-risk customers |
-
-**Key Finding:** Transformer models achieve perfect precision on highest-risk customers (100% vs 99% baseline), enabling confident business interventions with zero wasted retention resources.
-
----
-
 ## 1. Problem Statement
 
 Customer churn is one of the most serious issues for customer-facing companies. Losing customers is costly and often preventable when the signals are detected early. Customer reviews contain patterns that reveal dissatisfaction and frustration which often appear well before a customer leaves.
@@ -37,6 +23,40 @@ The project builds and compares three models:
 1. **Classical Baseline:** TF-IDF and Logistic Regression
 2. **DistilBERT:** Transformer fine-tuned on review text
 3. **RoBERTa:** Transformer fine-tuned on the same task
+
+### Why These Models?
+
+**Baseline (TF-IDF + Logistic Regression):**
+- Establishes whether churn prediction is learnable from text alone
+- Provides interpretable feature importance (which words matter)
+- Fast training and inference for comparison
+- Industry-standard approach before deep learning
+
+**DistilBERT (66M parameters, 6 layers):**
+- Knowledge distillation from BERT → 40% smaller, 60% faster
+- Proven performance on sentiment classification tasks
+- Optimal for production deployment (speed/accuracy tradeoff)
+- Tests whether smaller transformers suffice for this task
+
+**RoBERTa (125M parameters, 12 layers):**
+- Optimized BERT pretraining (longer training, larger batches, dynamic masking)
+- Removed next-sentence prediction → better single-sequence understanding
+- State-of-the-art performance on text classification benchmarks
+- Tests whether maximum accuracy justifies increased computational cost
+
+**Why Transformers for Churn Prediction?**
+
+Customer reviews contain complex linguistic patterns that require contextual understanding:
+
+- **Negation handling:** "not bad" vs "bad" require understanding word relationships
+- **Sentiment intensity:** "good" vs "amazing" vs "mind-blowing" need graduated understanding
+- **Long-range dependencies:** Complaints buried in otherwise positive reviews
+- **Implicit dissatisfaction:** Subtle cues like "I guess it's okay" signal churn risk
+
+Classical models (bag-of-words, TF-IDF) treat words independently and miss these contextual patterns. Transformers with self-attention can capture:
+- Relationships between words across entire review
+- Sentiment modifiers (negations, intensifiers)
+- Implicit tone and dissatisfaction signals
 
 Each model is evaluated on accuracy, precision, recall, F1, AUC, inference time, calibration, and interpretability. Visualizations are included throughout the report.
 
@@ -395,6 +415,16 @@ print(f"Top 10% Precision: {precision_10:.2%}")
 
 RoBERTa achieves the strongest performance across all metrics, with DistilBERT offering an excellent balance between accuracy and speed.
 
+#### ROC Curves
+
+<p align="center">
+  <img src="./outputs/roc_curves.png" width="700">
+  <br>
+  <em>ROC curves demonstrating progressive improvement from baseline to transformers</em>
+</p>
+
+All models achieve strong discrimination ability (AUC > 96%). The visual separation between curves shows that transformers provide consistent improvement across all operating thresholds, not just at a single decision point.
+
 #### Top 10% Precision Analysis
 
 <p align="center">
@@ -420,6 +450,26 @@ RoBERTa achieves the strongest performance across all metrics, with DistilBERT o
 
 The confusion matrices demonstrate balanced performance without systematic bias toward either class. RoBERTa achieves the lowest error rate with only 122 misclassifications out of 2,000 samples (6.1% error rate).
 
+#### Calibration Curves
+
+<p align="center">
+  <img src="./outputs/calibration_curves.png" width="700">
+  <br>
+  <em>Probability calibration showing reliable confidence estimates</em>
+</p>
+
+Well-calibrated models produce predicted probabilities that align with empirical frequencies—critical for threshold-based business decisions.
+
+#### Inference Latency Comparison
+
+<p align="center">
+  <img src="./outputs/inference_latency_comparison.png" width="600">
+  <br>
+  <em>Speed vs accuracy tradeoff across models</em>
+</p>
+
+All models meet the real-time latency requirement (<100ms). DistilBERT at 5.61ms provides the best balance for production deployment scenarios.
+
 #### Key Churn Phrases
 
 <p align="center">
@@ -430,34 +480,33 @@ The confusion matrices demonstrate balanced performance without systematic bias 
 
 Feature importance analysis reveals which linguistic patterns correlate with churn risk: words like "worst," "terrible," and "rude" predict churn, while "amazing," "excellent," and "delicious" predict loyalty.
 
-**Additional Visualizations:**
-
-The project includes additional analysis charts available in the `./outputs/` directory:
-- **ROC Curves:** All models achieve AUC > 96% with clear separation demonstrating transformer improvement
-- **Calibration Curves:** Well-calibrated probability estimates for threshold-based decisions
-- **Inference Latency Comparison:** All models meet real-time requirements (<100ms); DistilBERT at 5.61ms offers optimal balance
-
 ---
 
 ## 6. Interpretability
 
 Interpretability is essential for deploying models in business contexts. This analysis applies interpretability techniques from the course curriculum.
 
-### Attention Visualization
+### Model Interpretability Analysis
 
-Attention heatmaps reveal which tokens the transformer focuses on when making predictions.
+The project employs multiple interpretability methods to validate that models learn linguistically meaningful patterns:
 
-**What Attention Shows:**
+**Attention Weight Analysis:**
 - Strong attention between negation words ("not", "never") and sentiment they reverse
 - High weights linking intensifiers ("very", "extremely") with modified adjectives
 - Long-range dependencies spanning multiple sentences
 - Focus on business-relevant phrases like "never coming back" or "highly recommend"
 
-This validates that the model captures linguistically meaningful patterns.
+**SHAP (SHapley Additive exPlanations):**
+- Provides token-level attribution showing which words push predictions toward churn or no-churn
+- Validates that model decisions align with human reasoning
+- Builds stakeholder trust through transparent explanations
 
-### SHAP Explanations
+**Feature Importance (Baseline Model):**
+- Words like "worst," "terrible," "rude" strongly predict churn
+- Words like "amazing," "excellent," "delicious" predict loyalty
+- Confirms model learns sensible linguistic patterns, not spurious correlations
 
-SHAP (SHapley Additive exPlanations) provides token-level attribution, showing exactly which words push predictions toward churn or no-churn. This interpretability method builds stakeholder trust in model decisions.
+This multi-method approach validates that the model captures real language understanding rather than dataset artifacts.
 
 ---
 
@@ -1047,3 +1096,4 @@ This project meets all requirements for demonstrating mastery of machine learnin
 ---
 
 *For questions or feedback, please open an issue on the GitHub repository.*
+
