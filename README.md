@@ -1,9 +1,5 @@
 # Transformers for Customer Churn Prediction
 
-*Machine Learning Capstone Project | Fall 2024*
-
-**GitHub Repository:** https://github.com/yourusername/customer-churn-nlp
-
 ---
 
 ## 1. Problem Statement
