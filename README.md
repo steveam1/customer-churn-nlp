@@ -518,62 +518,73 @@ When attention weights, SHAP analysis, and feature importance all converge on th
 
 ---
 
-7. Misclassification Analysis
+## 7. Misclassification Analysis
 
-------------------------------------------------------------
-ERROR RATE COMPARISON
-------------------------------------------------------------
-Baseline (TF-IDF + LogReg):  379/2,000 (19.0%) 
-DistilBERT:                  169/2,000 (8.5%)  ← Production model
-RoBERTa:                     125/2,000 (6.3%)  ← Best performer
+Understanding model errors provides insights into limitations and improvement opportunities.
 
-Key Insight: RoBERTa achieves 67% error reduction vs baseline, 26% reduction vs DistilBERT
+### Error Rate Comparison
 
-------------------------------------------------------------
-ERROR BREAKDOWN
-------------------------------------------------------------
-                    False Positives    False Negatives
-Baseline                    185                194
-DistilBERT                   82                 87
-RoBERTa                      58                 67
+| Model | Total Errors | Error Rate | False Positives | False Negatives |
+|-------|-------------|------------|-----------------|-----------------|
+| **Baseline (TF-IDF + LogReg)** | 379/2,000 | 19.0% | 185 | 194 |
+| **DistilBERT** | 169/2,000 | 8.5% | 82 | 87 |
+| **RoBERTa** | 125/2,000 | 6.3% | 58 | 67 |
 
-RoBERTa's deeper architecture (12 layers vs 6) provides superior handling of mixed sentiment and contextual nuance.
+**Key Insight:** RoBERTa achieves 67% error reduction compared to baseline and 26% reduction compared to DistilBERT. RoBERTa's deeper architecture (12 layers vs 6) provides superior handling of mixed sentiment and contextual nuance.
 
-------------------------------------------------------------
-EXAMPLE MISCLASSIFICATIONS (DistilBERT)
-------------------------------------------------------------
+---
 
-False Positive (97.05% confidence):
-"relaxing, very good location. little cramped with small tables..."
-→ Issue: Model overweighted "cramped" and "small," missed positive tone
+### Example Misclassifications (DistilBERT)
 
-False Positive (95.62% confidence):
-"The non-sushi items were pretty impressive! I had a white fish taco that was absolutely delicious! The decor is pretty and the mood is very nice..."
-→ Issue: Rare edge case where highly positive language misclassifies
+#### False Positive Examples (predicted churn, actually loyal)
 
-False Negative (64.63% confidence):
-"Nightclub rating only... We got lucky because we happened to arrive during Kris Humphries' bachelor party..."
-→ Issue: Event-specific context doesn't reflect typical experience; low confidence signals uncertainty
+**Case 1 (Confidence: 97.05%)**
 
-False Negative (94.68% confidence):
-"Great double date place that allowed us to bring our dogs to sit at the table outside with us. Although it took a long time to get a table, the beer..."
-→ Issue: Positive framing overshadowed the complaint about wait time
+*"relaxing, very good location. little cramped with small tables..."*
 
-------------------------------------------------------------
-COMMON ERROR PATTERNS
-------------------------------------------------------------
-All models struggle with:
-• Mixed sentiment (positive and negative in same review)
-• Context-dependent language (event-specific situations)
-• Sarcasm and implicit dissatisfaction
+**Analysis:** Model focused on "cramped" and "small" as negative signals, missing the overall positive tone ("relaxing," "very good").
 
-------------------------------------------------------------
-DEPLOYMENT RECOMMENDATIONS
-------------------------------------------------------------
-1. Flag predictions with 60-75% confidence for human review
-2. Use RoBERTa for highest accuracy; DistilBERT for faster inference
-3. Implement confidence thresholds before automated actions
-4. Monitor false negatives closely (missed churn is costlier)
+**Case 2 (Confidence: 95.62%)**
+
+*"The non-sushi items were pretty impressive! I had a white fish taco that was absolutely delicious! The decor is pretty and the mood is very nice..."*
+
+**Analysis:** Despite clearly positive language ("impressive," "absolutely delicious"), the model incorrectly predicted churn—indicating rare edge cases where very positive reviews misclassify.
+
+---
+
+#### False Negative Examples (predicted loyal, actually churned)
+
+**Case 1 (Confidence: 64.63%)**
+
+*"Nightclub rating only... We got lucky because we happened to arrive during Kris Humphries' bachelor party..."*
+
+**Analysis:** Event-specific context (bachelor party) doesn't reflect typical experience. Lower confidence (64.63%) suggests model uncertainty about mixed-sentiment, context-dependent reviews.
+
+**Case 2 (Confidence: 94.68%)**
+
+*"Great double date place that allowed us to bring our dogs to sit at the table outside with us. Although it took a long time to get a table, the beer..."*
+
+**Analysis:** Positive framing ("Great," "allowed us to bring our dogs") overshadowed the complaint "took a long time." Mixed-sentiment reviews challenge the model.
+
+---
+
+### Common Error Patterns
+
+All models struggle with similar patterns:
+- **Mixed sentiment** - Reviews with both positive and negative elements in same text
+- **Context-dependent language** - Event-specific or situational reviews that don't reflect typical experience
+- **Sarcasm and implicit dissatisfaction** - Indirect expressions of discontent
+
+---
+
+### Deployment Recommendations
+
+1. **Flag predictions with 60-75% confidence for human review** - Lower confidence indicates ambiguous cases
+2. **Use RoBERTa for highest accuracy; DistilBERT for faster inference** - Balance accuracy vs speed based on use case
+3. **Implement confidence thresholds before automated actions** - Avoid acting on uncertain predictions
+4. **Monitor false negatives closely** - Missed churn is costlier than false alarms in retention strategy
+
+---
 
    
 ## 8. Bias and Fairness Analysis
