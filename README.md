@@ -600,7 +600,7 @@ This project demonstrates that customer churn risk can be identified directly fr
 - **Understand dissatisfaction patterns** through interpretable linguistic features
 - **Reduce customer acquisition costs** by focusing on retention
 
-**Business Value:** On a customer base of 10,000, achieving 100% precision on the top 10% means correctly identifying 1,000 at-risk customers with zero false positives—potentially saving hundreds of thousands in retention value.
+**Business Value:** On a customer base of 10,000, achieving 100% precision on the top 10% means correctly identifying 1,000 at-risk customers with zero false positives which could potentially save hundreds of thousands in retention value.
 
 ### What It Reveals
 
