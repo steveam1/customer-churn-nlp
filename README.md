@@ -551,20 +551,30 @@ Understanding model errors provides insights into limitations and improvement op
 Following the fairness assessment methodology from the course, systematic bias detection examines model performance across population subgroups.
 
 <p align="center">
-  <img src="./outputs/bias_analysis.png" width="900">
+  <img src="./outputs/bias_comparison.png" width="900">
   <br>
-  <em>Model performance across review length categories and dataset class balance</em>
+  <em>Bias analysis comparing DistilBERT and RoBERTa across review length categories</em>
 </p>
 
 ### Review Length Bias Analysis
 
-**Results:**
-- **Short reviews (<20 words):** 93.0% accuracy
-- **Medium reviews (20-100 words):** 95.6% accuracy
-- **Long reviews (>100 words):** 87.4% accuracy
-- **Maximum difference:** 8.2%
+Both transformer models were tested for bias across review length categories:
 
-**Assessment:** The performance difference is below the 10% threshold established for this project. No concerning systematic bias detected across review lengths.
+**DistilBERT Results:**
+- Short reviews (<20 words): 93.0% accuracy
+- Medium reviews (20-100 words): 95.6% accuracy
+- Long reviews (>100 words): 87.4% accuracy
+- **Maximum difference: 8.14%**
+
+**RoBERTa Results:**
+- Short reviews (<20 words): 93.9% accuracy
+- Medium reviews (20-100 words): 96.4% accuracy
+- Long reviews (>100 words): 91.4% accuracy
+- **Maximum difference: 5.03%**
+
+**Assessment:** Both models perform below the 10% threshold for concerning bias. Notably, RoBERTa demonstrates superior consistency across review lengths (5.03% vs 8.14%), indicating more robust performance across diverse input types. This difference suggests RoBERTa's deeper architecture (12 layers vs 6) better handles context preservation even with truncation.
+
+**Why the variation?** All models truncate reviews at 128 tokens. Long reviews lose context, affecting all customers equally—this is a technical limitation, not demographic bias.
 
 ### Fairness Considerations
 
@@ -578,7 +588,6 @@ Following the fairness assessment methodology from the course, systematic bias d
 - Regular fairness audits recommended in deployment
 - Model should not be used for punitive actions
 - Probabilities should be communicated with appropriate uncertainty
-
 ---
 
 ## 9. Impact, Insights, and Next Steps
