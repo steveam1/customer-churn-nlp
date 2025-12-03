@@ -34,34 +34,6 @@ def predict_with_baseline(text: str):
     return pred, float(prob)
 
 
-def get_word_importance(text: str):
-    """Get word importance scores for the review"""
-    tfidf_vectorizer, lr_model = load_baseline()
-    
-    # Get feature names and their coefficients
-    feature_names = tfidf_vectorizer.get_feature_names_out()
-    coefficients = lr_model.coef_[0]
-    
-    # Transform the text
-    X = tfidf_vectorizer.transform([text])
-    
-    # Get non-zero features in this review
-    feature_indices = X.nonzero()[1]
-    
-    # Get scores for words actually in this review
-    word_scores = {}
-    for idx in feature_indices:
-        word = feature_names[idx]
-        score = coefficients[idx]
-        # Only include if the word appears in the original text (handles n-grams)
-        if word in text.lower():
-            word_scores[word] = score
-    
-    # Sort by absolute importance
-    sorted_words = sorted(word_scores.items(), key=lambda x: abs(x[1]), reverse=True)
-    return sorted_words[:10]  # Top 10 most important words
-
-
 def format_prediction(pred: int, prob: float, threshold: float):
     label = "Churn risk" if prob >= threshold else "No churn risk"
     emoji = "⚠️" if label == "Churn risk" else "✅"
@@ -149,35 +121,6 @@ if predict_button:
                 "belongs to the churn class."
             )
             
-            # Display the review with highlighted important words
-            important_words = get_word_importance(review_text)
-            
-            if important_words:
-                st.markdown("#### Key Words Influencing Prediction")
-                
-                # Separate into churn indicators and loyalty indicators
-                churn_words = [(w, s) for w, s in important_words if s > 0]
-                no_churn_words = [(w, s) for w, s in important_words if s < 0]
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("**🔴 Churn Indicators:**")
-                    if churn_words:
-                        for word, score in churn_words[:5]:
-                            st.write(f"• **{word}**: {score:.3f}")
-                    else:
-                        st.write("None detected")
-                
-                with col2:
-                    st.markdown("**🟢 Loyalty Indicators:**")
-                    if no_churn_words:
-                        for word, score in no_churn_words[:5]:
-                            st.write(f"• **{word}**: {abs(score):.3f}")
-                    else:
-                        st.write("None detected")
-            
-            st.markdown("---")
             st.code(review_text)
 
 
@@ -197,7 +140,7 @@ This model is extremely fast and achieves 96.9% AUC on the test set.
 
 1. The text is vectorized using TF-IDF (Term Frequency-Inverse Document Frequency)
 2. The logistic regression model predicts churn probability based on learned patterns
-3. Words are weighted by their importance - positive weights indicate churn, negative indicate loyalty
+3. The model analyzes word patterns and combinations to identify churn risk
 4. The model outputs a probability score between 0 and 1
 
 **Full Project:**
