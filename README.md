@@ -66,16 +66,13 @@ The end result is a complete natural language churn prediction framework plus an
 
 This project directly applies key concepts from the transformers course:
 
-1. **Transformer Architecture:** DistilBERT (66M params) and RoBERTa (125M params) implementing self-attention mechanisms and encoder-only architectures studied in class
+**Transformer Architecture:** DistilBERT (66M params) and RoBERTa (125M params) implementing self-attention mechanisms and encoder-only architectures studied in class
 
-2. **Contextual Embeddings:** Transformers generate context-dependent representations vs. TF-IDF's static bag-of-words approach, demonstrating how self-attention captures semantic relationships like "not bad" vs. "bad"
-
-3. **Fine-Tuning Pretrained Models:** Adapts models pretrained on massive corpora (Wikipedia, BookCorpus) to the downstream task of churn prediction using task-specific classification heads
+**Contextual Embeddings:** Transformers generate context-dependent representations vs. TF-IDF's static bag-of-words approach, demonstrating how self-attention captures semantic relationships like "not bad" vs. "bad"
 
 **Methodology Connection:**
 - **Self-attention mechanisms:** Multi-head attention for capturing long-range dependencies in review text
-- **Transfer learning:** Leveraging pretrained language understanding for specialized classification
-- **Encoder architecture:** Bidirectional context processing for sentiment and dissatisfaction detection
+- **Encoder architecture:** Bidirectional context processing for sentiment understanding
 
 ---
 
