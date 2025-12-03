@@ -62,23 +62,24 @@ The end result is a complete natural language churn prediction framework plus an
 
 ## 2. Methods and Techniques
 
-### 2.1 Connection to Course Material
+## 2.1 Connection to Course Material
 
-This project directly applies core concepts from the NLP course:
+This project directly applies key concepts from the transformers course:
 
-- **Transformer Architecture:** Uses DistilBERT (6 layers, 66M params) and RoBERTa (12 layers, 125M params), demonstrating practical application of self-attention mechanisms and pretrained language models studied in class.
+1. **Transformer Architecture:** DistilBERT (66M params) and RoBERTa (125M params) implementing self-attention mechanisms and encoder-only architectures studied in class
 
-- **Transfer Learning:** Fine-tunes pretrained models on domain-specific churn prediction task, implementing the transfer learning paradigm where models pretrained on massive text corpora are adapted to specialized downstream tasks.
+2. **Contextual Embeddings:** Transformers generate context-dependent representations vs. TF-IDF's static bag-of-words approach, demonstrating how self-attention captures semantic relationships like "not bad" vs. "bad"
 
-- **Evaluation Methodology:** Comprehensive assessment using precision, recall, F1, AUC, and calibration—applying the model evaluation frameworks covered in class. Includes bias testing across review lengths to ensure fairness.
+3. **Fine-Tuning Pretrained Models:** Adapts models pretrained on massive corpora (Wikipedia, BookCorpus) to the downstream task of churn prediction using task-specific classification heads
 
-- **Interpretability Methods:** Attention weight visualization and SHAP values address the black-box problem in deep learning, providing transparency into model decision-making—critical for deployment in business contexts.
-
-- **Classical Baseline:** TF-IDF + logistic regression establishes benchmark performance and provides comparison between classical NLP (bag-of-words) and modern contextual approaches (transformers).
+**Methodology Connection:**
+- **Self-attention mechanisms:** Multi-head attention for capturing long-range dependencies in review text
+- **Transfer learning:** Leveraging pretrained language understanding for specialized classification
+- **Encoder architecture:** Bidirectional context processing for sentiment and dissatisfaction detection
 
 ---
 
-### 2.2 System Architecture
+## 2.2 System Architecture
 
 **Baseline Pipeline:**
 ```
@@ -98,7 +99,7 @@ Review → [Tokenization (128 tokens)] → [Fine-tuned DistilBERT/RoBERTa] → C
 
 ---
 
-### 2.3 Dataset
+## 2.3 Dataset
 
 **Yelp Polarity** (HuggingFace `datasets` library)
 
@@ -112,7 +113,8 @@ Review → [Tokenization (128 tokens)] → [Fine-tuned DistilBERT/RoBERTa] → C
 - Positive reviews (4-5 stars) → No churn risk (0)
 - Negative reviews (1-2 stars) → Churn risk (1)
 
-**Important Note:** Sentiment serves as a proxy for churn risk. See Limitations section for discussion of this assumption.
+**Important Note:** Sentiment serves as a proxy for churn risk. See Limitations section for discussion of this assumption
+
 
 ---
 
