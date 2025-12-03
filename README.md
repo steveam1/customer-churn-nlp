@@ -60,7 +60,7 @@ The end result is a complete natural language churn prediction framework plus an
 
 ---
 
-## 3. Methods and Techniques
+## 2. Methods and Techniques
 
 ### Data Source
 
@@ -110,9 +110,9 @@ The **Yelp Polarity dataset** is loaded from HuggingFace. This widely-used bench
 
 ---
 
-## 4. Code Demonstration
+## 3. Code Demonstration
 
-### 4.1 Data Loading and Label Mapping
+### 3.1 Data Loading and Label Mapping
 
 ```python
 from datasets import load_dataset
@@ -139,7 +139,7 @@ train_df = train_df.sample(10000, random_state=42)
 test_df = test_df.sample(2000, random_state=42)
 ```
 
-### 4.2 Baseline: TF-IDF and Logistic Regression
+### 3.2 Baseline: TF-IDF and Logistic Regression
 
 ```python
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -177,7 +177,7 @@ print(classification_report(y_test, y_pred))
 print("AUC:", roc_auc_score(y_test, y_proba))
 ```
 
-### 4.3 Saving the Baseline Model
+### 3.3 Saving the Baseline Model
 
 ```python
 import pickle
@@ -193,7 +193,7 @@ with open("churn_model/tfidf_vectorizer.pkl", "wb") as f:
     pickle.dump(vectorizer, f)
 ```
 
-### 4.4 Transformer Tokenization
+### 3.4 Transformer Tokenization
 
 ```python
 from transformers import AutoTokenizer
@@ -216,7 +216,7 @@ tokenized_train = dataset["train"].map(tokenize, batched=True)
 tokenized_test = dataset["test"].map(tokenize, batched=True)
 ```
 
-### 4.5 Fine-Tuning DistilBERT
+### 3.5 Fine-Tuning DistilBERT
 
 ```python
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
@@ -275,7 +275,7 @@ trainer = Trainer(
 trainer.train()
 ```
 
-### 4.6 Fine-Tuning RoBERTa
+### 3.6 Fine-Tuning RoBERTa
 
 ```python
 # Load RoBERTa
@@ -312,7 +312,7 @@ roberta_trainer = Trainer(
 roberta_trainer.train()
 ```
 
-### 4.7 Model Evaluation and Visualization
+### 3.7 Model Evaluation and Visualization
 
 #### Confusion Matrix
 
@@ -375,7 +375,7 @@ print(f"Top 10% Precision: {precision_10:.2%}")
 
 ---
 
-## 5. Results and Visualizations
+## 4. Results and Visualizations
 
 ### Model Performance Summary
 
@@ -460,7 +460,7 @@ All models meet the real-time latency requirement (<100ms). DistilBERT at 5.61ms
 
 ---
 
-## 6. Interpretability
+## 5. Interpretability
 
 Interpretability is essential for deploying models in business contexts. This analysis applies multiple interpretability techniques to validate that models learn linguistically meaningful patterns.
 
@@ -518,7 +518,7 @@ When attention weights, SHAP analysis, and feature importance all converge on th
 
 ---
 
-## 7. Misclassification Analysis
+## 6. Misclassification Analysis
 
 ### Error Rate Comparison
 
@@ -564,7 +564,7 @@ All models struggle with:
 ---
 
    
-## 8. Bias and Fairness Analysis
+## 7. Bias and Fairness Analysis
 
 <p align="center">
   <img src="./outputs/bias_comparison.png" width="900">
@@ -606,7 +606,7 @@ Both transformer models were tested for bias across review length categories:
 - Probabilities should be communicated with appropriate uncertainty
 ---
 
-## 9. Impact, Insights, and Next Steps
+## 8. Impact, Insights, and Next Steps
 
 ### Impact
 
@@ -644,7 +644,7 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 ---
 
-## 10. Model and Data Cards
+## 9. Model and Data Cards
 
 ### Model Card
 
@@ -743,7 +743,7 @@ DistilBERT: Apache 2.0 | RoBERTa: MIT | Yelp Dataset: CC BY 4.0
 - Applications requiring demographic fairness guarantees
 
 ---
-## 11. Streamlit Demo
+## 10. Streamlit Demo
 
 A working interactive demonstration is included to show real-time churn prediction.
 
@@ -781,7 +781,7 @@ The demo uses the saved baseline model for fast, CPU-based inference. Transforme
 
 ---
 
-## 12. Setup Instructions
+## 11. Setup Instructions
 
 ### Prerequisites
 
@@ -850,7 +850,7 @@ Without GPU (CPU only):
 
 ---
 
-## 13. Resource Links and References
+## 12. Resource Links and References
 
 ### Research Papers
 
@@ -906,7 +906,7 @@ License: MIT License
 
 ---
 
-## 14. Repository Structure
+## 13. Repository Structure
 
 ```
 customer-churn-nlp/
@@ -928,36 +928,6 @@ customer-churn-nlp/
 ├── requirements.txt            # Dependencies
 └── README.md                   # Documentation
 ```
-
----
-
-## 14. Conclusion
-
-This project demonstrates a complete end-to-end natural language processing pipeline for predicting customer churn from review text. By applying techniques including transformer architectures, attention mechanisms, transfer learning, comprehensive evaluation, and ethical considerations—the analysis achieves exceptional performance (98.7% AUC) while maintaining interpretability and fairness.
-
-### Key Achievements
-
-**Strong Performance:** RoBERTa achieves 98.7% AUC, substantially exceeding the 0.85 target  
-**Perfect Precision:** 100% accuracy on top 10% highest-risk predictions enables confident business decisions  
-**Real-Time Inference:** Sub-100ms latency suitable for production deployment  
-**Interpretability:** Attention and SHAP analyses validate linguistically meaningful patterns  
-**Fairness:** No concerning bias detected across review length categories  
-**Course Integration:** Every major component applies concepts from the curriculum  
-
-### Technical Contributions
-
-- Demonstrates transformer superiority over classical NLP for context-dependent tasks
-- Validates transfer learning effectiveness for domain-specific classification
-- Provides interpretability framework for business stakeholder trust
-- Establishes rigorous evaluation methodology beyond simple accuracy
-
-### Business Value
-
-Organizations can deploy this framework to:
-- Identify at-risk customers before they churn
-- Prioritize retention resources on highest-value predictions
-- Understand dissatisfaction patterns through interpretable features
-- Reduce customer acquisition costs through improved retention
 
 ---
 
