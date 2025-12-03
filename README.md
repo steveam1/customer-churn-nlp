@@ -568,8 +568,6 @@ Understanding model errors provides insights into limitations and improvement op
 
 ## 8. Bias and Fairness Analysis
 
-Following the fairness assessment methodology from the course, systematic bias detection examines model performance across population subgroups.
-
 <p align="center">
   <img src="./outputs/bias_comparison.png" width="900">
   <br>
