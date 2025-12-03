@@ -458,16 +458,6 @@ Well-calibrated models produce predicted probabilities that align with empirical
 
 All models meet the real-time latency requirement (<100ms). DistilBERT at 5.61ms provides the best balance for production deployment scenarios.
 
-#### Key Churn Phrases
-
-<p align="center">
-  <img src="./outputs/key_churn_phrases.png" width="700">
-  <br>
-  <em>Most important words and phrases from baseline model</em>
-</p>
-
-Feature importance analysis reveals which linguistic patterns correlate with churn risk: words like "worst," "terrible," and "rude" predict churn, while "amazing," "excellent," and "delicious" predict loyalty.
-
 ---
 
 ## 6. Interpretability
