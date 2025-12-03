@@ -62,23 +62,61 @@ The end result is a complete natural language churn prediction framework plus an
 
 ## 2. Methods and Techniques
 
-### Data Source
+### 2.1 Connection to Course Material
 
-The **Yelp Polarity dataset** is loaded from HuggingFace. This widely-used benchmark contains customer reviews with sentiment labels.
+This project directly applies core concepts from the NLP course:
+
+- **Transformer Architecture:** Uses DistilBERT (6 layers, 66M params) and RoBERTa (12 layers, 125M params), demonstrating practical application of self-attention mechanisms and pretrained language models studied in class.
+
+- **Transfer Learning:** Fine-tunes pretrained models on domain-specific churn prediction task, implementing the transfer learning paradigm where models pretrained on massive text corpora are adapted to specialized downstream tasks.
+
+- **Evaluation Methodology:** Comprehensive assessment using precision, recall, F1, AUC, and calibration—applying the model evaluation frameworks covered in class. Includes bias testing across review lengths to ensure fairness.
+
+- **Interpretability Methods:** Attention weight visualization and SHAP values address the black-box problem in deep learning, providing transparency into model decision-making—critical for deployment in business contexts.
+
+- **Classical Baseline:** TF-IDF + logistic regression establishes benchmark performance and provides comparison between classical NLP (bag-of-words) and modern contextual approaches (transformers).
+
+---
+
+### 2.2 System Architecture
+
+**Baseline Pipeline:**
+```
+Review → [TF-IDF Vectorization] → [Logistic Regression] → Churn Risk Score
+```
+
+**Transformer Pipeline:**
+```
+Review → [Tokenization (128 tokens)] → [Fine-tuned DistilBERT/RoBERTa] → Churn Risk Score
+```
+
+**Key Components:**
+- **Vectorization:** TF-IDF with 1-2 grams, 5K features, min_df=5, max_df=0.8
+- **Models:** distilbert-base-uncased, roberta-base (HuggingFace Transformers)
+- **Training:** Learning rate 2e-5, 3 epochs, batch size 32, FP16 mixed precision, T4 GPU
+- **Framework:** HuggingFace Trainer API with warmup and weight decay
+
+---
+
+### 2.3 Dataset
+
+**Yelp Polarity** (HuggingFace `datasets` library)
+
+**Specifications:**
+- Training: 10,000 samples
+- Testing: 2,000 samples  
+- Balanced: 50/50 distribution
+- Language: English
 
 **Label Mapping:**
 - Positive reviews (4-5 stars) → No churn risk (0)
 - Negative reviews (1-2 stars) → Churn risk (1)
 
-**Dataset Specifications:**
-- Training: 10,000 samples
-- Testing: 2,000 samples
-- Balanced classes (50/50 distribution)
-- Language: English
+**Important Note:** Sentiment serves as a proxy for churn risk. See Limitations section for discussion of this assumption.
 
-**Important Note:** Sentiment serves as a proxy for churn risk. The Limitations section discusses this assumption.
+---
 
-### Modeling Techniques Applied
+### 2.4 Modeling Techniques Applied
 
 #### **Classical Baseline**
 - TF-IDF vectorization with 1-2 grams
@@ -107,6 +145,8 @@ The **Yelp Polarity dataset** is loaded from HuggingFace. This widely-used bench
 - Attention weight visualization
 - SHAP (SHapley Additive exPlanations)
 - Feature importance from baseline model
+
+**Training Cost:** ~7 minutes total (T4 GPU)
 
 ---
 
