@@ -650,108 +650,47 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 #### Model Information
 
-**Model Name:** DistilBERT and RoBERTa for Customer Churn Classification
+**Models:** DistilBERT (66M parameters, 6 layers) and RoBERTa (125M parameters, 12 layers)
 
-**Model Type:** Fine-tuned transformer encoder for binary sequence classification
+**Task:** Binary classification for customer churn risk prediction from review text
 
-**Architecture:**
-- **DistilBERT:** 6 transformer encoder layers, 66 million parameters, 768 hidden dimensions
-- **RoBERTa:** 12 transformer encoder layers, 125 million parameters, 768 hidden dimensions
-
-**Training Procedure:**
-- Pretrained weights from HuggingFace
-- Fine-tuned on Yelp Polarity with churn labels
-- AdamW optimizer, learning rate 2e-5, warmup steps 500
-- Mixed precision (FP16) training on GPU
-- 3 epochs, batch size 32
-
-#### Intended Use
-
-**Primary Use:** Predicting customer churn risk from review text to enable proactive retention
-
-**Intended Users:** Customer success teams, retention analytics, business intelligence
-
-**Input:** Raw customer review text (up to 128 tokens after tokenization)
-
-**Output:** 
-- Binary classification (churn risk: 0 or 1)
-- Probability score for churn risk (0.0 to 1.0)
-
-**Use Cases:**
-- Flagging high-risk customers for retention campaigns
-- Ranking customers by churn probability
-- Analyzing sentiment patterns in customer feedback
-- Supporting customer success workflows
+**Training:** Fine-tuned from HuggingFace pretrained weights on Yelp Polarity dataset (10,000 samples, 3 epochs, AdamW optimizer, learning rate 2e-5)
 
 #### Performance
-
-**Test Set Results (2,000 samples):**
 
 | Metric | DistilBERT | RoBERTa |
 |--------|-----------|---------|
 | Accuracy | 91.6% | 93.9% |
-| Precision | 91.7% | 93.1% |
-| Recall | 91.2% | 94.6% |
-| F1 Score | 91.4% | 93.9% |
 | AUC | 97.2% | 98.7% |
 | Top 10% Precision | 100% | 100% |
 | Inference Latency | 5.61 ms | 13.52 ms |
 
-**Strengths:**
-- Exceptional AUC (>97%) demonstrates strong ranking ability
-- Perfect top-10% precision enables confident high-stakes decisions
-- Low inference latency suitable for real-time applications
-- Well-calibrated probabilities for threshold-based rules
+#### Intended Use
+
+**Primary Use:** Predict customer churn risk to enable proactive retention  
+**Users:** Customer success teams, retention analytics, business intelligence  
+**Input:** Customer review text (up to 128 tokens)  
+**Output:** Binary classification (0/1) and probability score (0.0-1.0)
 
 #### Limitations
 
-**Data Limitations:**
 - Trained on sentiment labels, not verified churn behavior
-- Yelp reviews may not generalize to all industries or customer types
-- English-only; performance on other languages unknown
-- No demographic information to assess fairness across protected groups
-
-**Model Limitations:**
-- May misinterpret sarcasm, irony, or ambiguous sentiment
-- Performance degrades on very long reviews (>128 tokens truncated)
-- Requires GPU for fast inference at scale
-- Black-box nature despite attention/SHAP interpretability
-
-**Deployment Considerations:**
-- Should augment, not replace, human judgment in high-stakes decisions
-- Requires monitoring for distribution shift as language evolves
-- May need retraining quarterly to maintain performance
-- Consider demographic fairness audits if deployed broadly
+- English-only; may not generalize to other languages or industries
+- May misinterpret sarcasm, irony, or mixed sentiment
+- Truncates reviews >128 tokens
+- Should augment, not replace, human judgment
 
 #### Ethical Considerations
 
-**Bias Risks:**
-- Model may encode biases present in Yelp reviewer demographics
-- Performance across dialects, writing styles, or non-native speakers unknown
-- Could disadvantage customers who express dissatisfaction differently
-
-**Misuse Potential:**
-- Should NOT be used to penalize or discriminate against customers
-- Predictions should NOT solely determine service quality
-- Must NOT be used without transparency to affected customers
-
-**Recommended Safeguards:**
-- Regular fairness audits across customer segments
-- Human review of high-confidence predictions before action
-- Clear communication that predictions inform, not dictate, decisions
-- Ongoing bias monitoring and mitigation
-
-**Privacy:**
-- Model processes text content but does not store personal identifiers
-- Predictions should be protected as confidential customer data
-- Comply with GDPR, CCPA, and industry-specific regulations
+- Model may encode biases from Yelp reviewer demographics
+- NOT for penalizing or discriminating against customers
+- Requires human review for high-stakes decisions
+- Regular fairness audits recommended
+- Predictions are confidential customer data (comply with GDPR/CCPA)
 
 #### Licenses
 
-- **DistilBERT:** Apache License 2.0
-- **RoBERTa:** MIT License
-- **Project Code:** MIT License
-- **Yelp Dataset:** Creative Commons Attribution 4.0 International (CC BY 4.0)
+DistilBERT: Apache 2.0 | RoBERTa: MIT | Yelp Dataset: CC BY 4.0
 
 ---
 
@@ -759,123 +698,51 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 #### Dataset Information
 
-**Dataset Name:** Yelp Polarity Dataset
+**Name:** Yelp Polarity Dataset  
+**Source:** HuggingFace (https://huggingface.co/datasets/yelp_polarity)  
+**License:** CC BY 4.0  
+**Size:** 10,000 training samples, 2,000 test samples (stratified from 560,000+ original reviews)
 
-**Source:** HuggingFace Datasets (https://huggingface.co/datasets/yelp_polarity)
+#### Label Mapping
 
-**Original Source:** Yelp Dataset Challenge
-
-**License:** Creative Commons Attribution 4.0 International (CC BY 4.0)
-
-#### Content Description
-
-**Data Type:** Customer reviews with binary sentiment labels
-
-**Size:**
-- Training: 10,000 samples (stratified random sample)
-- Testing: 2,000 samples (stratified random sample)
-- Total original: 560,000+ reviews
-
-**Features:**
-- **text:** Raw review text (variable length)
-- **label:** Binary sentiment (positive/negative)
-- **churn:** Mapped label (1 = churn risk, 0 = no churn risk)
-
-**Label Mapping:**
 - Positive reviews (4-5 stars) → No churn risk (0)
 - Negative reviews (1-2 stars) → Churn risk (1)
-- Neutral reviews (3 stars) excluded for clear binary separation
+- Neutral reviews (3 stars) excluded
+- Class distribution: 50/50 balanced
 
-**Class Distribution:** 
-- Approximately 50% churn risk, 50% no churn risk (balanced)
-
-#### Data Collection
-
-**Collection Method:** User-generated reviews on Yelp platform
-
-**Time Period:** Reviews collected over multiple years (exact dates vary)
-
-**Geographic Coverage:** Primarily United States businesses
-
-**Language:** English
-
-**Domains:** Restaurants, services, retail (diverse business types)
-
-#### Data Quality
+#### Data Characteristics
 
 **Strengths:**
-- Large, diverse sample of authentic customer feedback
-- Balanced class distribution
-- Real-world language with natural variation
-- Well-established benchmark in NLP research
+- Large, diverse, authentic customer feedback
+- Balanced classes
+- Well-established NLP benchmark
 
-**Known Issues:**
-- Sentiment labels are proxy for churn, not actual defection behavior
-- Yelp reviewers may not represent all customer demographics
-- Reviews may contain sarcasm, irony, or mixed sentiment
-- Selection bias: customers who leave reviews may differ from those who don't
-- Potential for fake or manipulated reviews
+**Limitations:**
+- Sentiment ≠ actual churn behavior (proxy labels)
+- Yelp reviewers may not represent all demographics
+- Urban/restaurant-heavy; may not generalize to B2B or technical products
+- May contain sarcasm, fake reviews, selection bias
 
 #### Potential Biases
 
-**Demographic Bias:**
-- Yelp users skew younger and more tech-savvy
-- Urban areas over-represented
-- May not reflect diverse socioeconomic backgrounds
+- Demographic: Younger, tech-savvy, urban users over-represented
+- Linguistic: Standard English favored; dialects/slang under-represented
+- Domain: Restaurant/hospitality focused
+- Temporal: Language patterns evolve over time
 
-**Linguistic Bias:**
-- Standard English over-represented
-- Slang, dialects, or non-native patterns under-represented
-- Writing style may correlate with unobserved demographic factors
+#### Appropriate Use
 
-**Domain Bias:**
-- Heavy emphasis on restaurants and hospitality
-- May not generalize to B2B, enterprise, or technical products
-
-**Temporal Bias:**
-- Language patterns evolve; older reviews may differ from current usage
-- Economic conditions during review period affect sentiment
-
-#### Ethical Considerations
-
-**Privacy:**
-- Reviews are public and contain no personally identifiable information
-- Reviewers consented to public posting on Yelp platform
-
-**Appropriate Use:**
-- Educational and research purposes
-- Developing customer analytics tools with appropriate safeguards
-- NOT appropriate for high-stakes individual decisions without human review
-
-**Inappropriate Use:**
-- Discriminating against customers based on writing style
-- Making automated decisions with legal/financial consequences
-- Assuming causality between review text and actual behavior
-
-#### Limitations
-
-1. **Proxy Labels:** Sentiment ≠ actual churn behavior
-2. **Generalization:** Yelp reviews may not transfer to other channels (support tickets, surveys, social media)
-3. **Missing Context:** No customer metadata (tenure, purchase history, demographics)
-4. **Temporal Gap:** Reviews may occur after decision to churn has been made
-5. **Platform Bias:** Yelp-specific norms and reviewer motivations
-
-#### Recommended Use
-
-**Suitable For:**
+**Suitable for:**
+- Educational projects and NLP research
 - Proof-of-concept churn prediction models
-- Educational projects on NLP and customer analytics
-- Benchmarking transformer performance on sentiment classification
-- Research on interpretability and bias in NLP models
+- Benchmarking transformer performance
 
-**Not Suitable For:**
-- Production deployment without validation on actual churn labels
-- High-stakes automated customer decisions
-- Domains significantly different from restaurant/service reviews
+**Not suitable for:**
+- Production deployment without validation on actual churn data
+- High-stakes automated decisions
 - Applications requiring demographic fairness guarantees
 
 ---
-
 ## 11. Streamlit Demo
 
 A working interactive demonstration is included to show real-time churn prediction.
