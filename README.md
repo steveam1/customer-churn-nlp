@@ -515,6 +515,7 @@ The baseline's 96.9% AUC validates strong signal in these features. Transformers
 ### Multi-Method Validation
 
 When attention weights, SHAP analysis, and feature importance all converge on the same linguistic patterns, we can trust the model captures genuine language understanding rather than dataset artifacts. This multi-method approach is essential for production deployment where stakeholders need to understand *why* a customer was flagged, not just accept a probability score.
+
 ---
 
 ## 7. Misclassification Analysis
