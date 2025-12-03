@@ -644,106 +644,172 @@ This project demonstrates that customer churn risk can be identified directly fr
 
 ---
 
-## 9. Model and Data Cards
+## 9 Model Architecture and Versions
+
+### DistilBERT
+**Version:** `distilbert-base-uncased` (HuggingFace Transformers)  
+**Architecture:** 6 transformer layers, 66M parameters, 768 hidden dimensions  
+**Design:** Knowledge distillation from BERT—40% smaller, 60% faster, retains 97% performance
+
+### RoBERTa
+**Version:** `roberta-base` (HuggingFace Transformers)  
+**Architecture:** 12 transformer layers, 125M parameters, 768 hidden dimensions  
+**Design:** Robustly optimized BERT with improved pretraining (longer training, dynamic masking)
+
+### Baseline
+**Version:** Scikit-learn 1.3.0+  
+**Architecture:** TF-IDF vectorization (1-2 grams, 5K features) + L2-regularized logistic regression  
+**Design:** Classical ML baseline for comparison and interpretability
+
+---
+
+## 9.1 Intended Uses and Licenses
+
+### Intended Uses
+
+**Appropriate:**
+- Predict customer churn risk for proactive retention
+- Prioritize customer success outreach efforts
+- Analyze sentiment trends across customer segments
+- Educational NLP research and benchmarking
+
+**Inappropriate:**
+- High-stakes automated decisions without human review
+- Punitive actions against customers
+- Production deployment without validation on actual churn data
+- Non-English languages or domains significantly different from restaurants/services
+
+### Licenses
+
+**Models:**
+- DistilBERT: Apache 2.0
+- RoBERTa: MIT
+- Scikit-learn: BSD 3-Clause
+
+**Data:**
+- Yelp Polarity Dataset: CC BY 4.0
+
+**Project:**
+- This code: MIT License
+
+---
+
+## 9.2 Ethical Considerations and Bias
+
+### Known Biases
+
+**Data Biases:**
+- Demographic: Yelp users skew younger, urban, tech-savvy
+- Linguistic: Standard English over-represented; dialects/slang under-represented
+- Domain: Restaurant/hospitality focused; may not generalize to B2B
+
+**Model Biases:**
+- Trained on sentiment, not verified churn behavior
+- Long reviews (>128 tokens) truncated, losing context
+- May misinterpret sarcasm, irony, mixed sentiment
+
+### Bias Testing
+
+**Review Length (Tested):**
+- DistilBERT: 8.14% performance variation
+- RoBERTa: 5.03% performance variation
+- Both below 10% threshold for concerning bias
+
+**Demographic Fairness (Untested):**
+- No demographic labels available in dataset
+- Cannot assess fairness across race, gender, age
+- Critical gap for production deployment
+
+### Ethical Use Guidelines
+
+**Requirements:**
+- Predictions should augment, not replace, human judgment
+- Human review required for high-stakes decisions
+- Regular fairness audits recommended
+- Comply with GDPR/CCPA for customer data
+- Do NOT use to penalize or discriminate against customers
+
+**Deployment Checklist:**
+- Validate on actual churn data (not sentiment proxy)
+- Test demographic fairness if data available
+- Establish human review process
+- Set confidence thresholds for automation
+- Monitor performance and fairness continuously
+
+---
+
+## 10. Model and Data Cards
 
 ### Model Card
 
-#### Model Information
-
 **Models:** DistilBERT (66M parameters, 6 layers) and RoBERTa (125M parameters, 12 layers)
 
-**Task:** Binary classification for customer churn risk prediction from review text
+**Task:** Binary classification for customer churn risk from review text
 
-**Training:** Fine-tuned from HuggingFace pretrained weights on Yelp Polarity dataset (10,000 samples, 3 epochs, AdamW optimizer, learning rate 2e-5)
+**Training:** Fine-tuned on Yelp Polarity (10K samples, 3 epochs, learning rate 2e-5)
 
-#### Performance
+**Performance:**
 
 | Metric | DistilBERT | RoBERTa |
 |--------|-----------|---------|
 | Accuracy | 91.6% | 93.9% |
 | AUC | 97.2% | 98.7% |
 | Top 10% Precision | 100% | 100% |
-| Inference Latency | 5.61 ms | 13.52 ms |
+| Latency | 5.61 ms | 13.52 ms |
 
-#### Intended Use
+**Intended Use:** Predict churn risk for proactive retention (customer success teams, retention analytics)
 
-**Primary Use:** Predict customer churn risk to enable proactive retention  
-**Users:** Customer success teams, retention analytics, business intelligence  
-**Input:** Customer review text (up to 128 tokens)  
-**Output:** Binary classification (0/1) and probability score (0.0-1.0)
+**Limitations:**
+- Sentiment labels (not verified churn)
+- English-only
+- May misinterpret sarcasm/mixed sentiment
+- Should augment human judgment
 
-#### Limitations
-
-- Trained on sentiment labels, not verified churn behavior
-- English-only; may not generalize to other languages or industries
-- May misinterpret sarcasm, irony, or mixed sentiment
-- Truncates reviews >128 tokens
-- Should augment, not replace, human judgment
-
-#### Ethical Considerations
-
-- Model may encode biases from Yelp reviewer demographics
-- NOT for penalizing or discriminating against customers
+**Ethical Considerations:**
+- NOT for discriminating against customers
 - Requires human review for high-stakes decisions
-- Regular fairness audits recommended
-- Predictions are confidential customer data (comply with GDPR/CCPA)
+- No demographic fairness guarantees
 
-#### Licenses
-
-DistilBERT: Apache 2.0 | RoBERTa: MIT | Yelp Dataset: CC BY 4.0
+**Licenses:** DistilBERT: Apache 2.0 | RoBERTa: MIT | Data: CC BY 4.0
 
 ---
 
 ### Data Card
 
-#### Dataset Information
+**Dataset:** Yelp Polarity (HuggingFace)
 
-**Name:** Yelp Polarity Dataset  
-**Source:** HuggingFace (https://huggingface.co/datasets/yelp_polarity)  
-**License:** CC BY 4.0  
-**Size:** 10,000 training samples, 2,000 test samples (stratified from 560,000+ original reviews)
+**Size:** 10K training, 2K test (from 560K+ reviews)
 
-#### Label Mapping
-
-- Positive reviews (4-5 stars) → No churn risk (0)
-- Negative reviews (1-2 stars) → Churn risk (1)
-- Neutral reviews (3 stars) excluded
-- Class distribution: 50/50 balanced
-
-#### Data Characteristics
+**Labels:** Positive (4-5 stars) → No churn | Negative (1-2 stars) → Churn | Balanced 50/50
 
 **Strengths:**
-- Large, diverse, authentic customer feedback
+- Large, diverse, authentic feedback
 - Balanced classes
-- Well-established NLP benchmark
+- Established NLP benchmark
 
 **Limitations:**
-- Sentiment ≠ actual churn behavior (proxy labels)
-- Yelp reviewers may not represent all demographics
-- Urban/restaurant-heavy; may not generalize to B2B or technical products
-- May contain sarcasm, fake reviews, selection bias
+- Sentiment ≠ actual churn behavior
+- Restaurant/hospitality focused
+- Urban-biased, younger demographics
+- No demographic labels for fairness testing
 
-#### Potential Biases
+**Biases:**
+- Demographic: Younger, tech-savvy, urban users
+- Linguistic: Standard English favored
+- Domain: Restaurant-heavy
+- Temporal: Language evolves over time
 
-- Demographic: Younger, tech-savvy, urban users over-represented
-- Linguistic: Standard English favored; dialects/slang under-represented
-- Domain: Restaurant/hospitality focused
-- Temporal: Language patterns evolve over time
+**Appropriate Use:** Educational projects, proof-of-concept, benchmarking
 
-#### Appropriate Use
+**Not Suitable For:** Production without churn validation, high-stakes decisions, demographic fairness guarantees
 
-**Suitable for:**
-- Educational projects and NLP research
-- Proof-of-concept churn prediction models
-- Benchmarking transformer performance
-
-**Not suitable for:**
-- Production deployment without validation on actual churn data
-- High-stakes automated decisions
-- Applications requiring demographic fairness guarantees
+**License:** CC BY 4.0
 
 ---
-## 10. Streamlit Demo
+
+
+---
+## 11. Streamlit Demo
 
 A working interactive demonstration is included to show real-time churn prediction.
 
@@ -781,7 +847,7 @@ The demo uses the saved baseline model for fast, CPU-based inference. Transforme
 
 ---
 
-## 11. Setup Instructions
+## 12. Setup Instructions
 
 ### Prerequisites
 
@@ -850,7 +916,7 @@ Without GPU (CPU only):
 
 ---
 
-## 12. Resource Links and References
+## 13. Resource Links and References
 
 ### Research Papers
 
@@ -906,7 +972,7 @@ License: MIT License
 
 ---
 
-## 13. Repository Structure
+## 14. Repository Structure
 
 ```
 customer-churn-nlp/
