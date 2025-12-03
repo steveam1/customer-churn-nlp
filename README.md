@@ -472,30 +472,59 @@ Feature importance analysis reveals which linguistic patterns correlate with chu
 
 ## 6. Interpretability
 
-Interpretability is essential for deploying models in business contexts. This analysis applies interpretability techniques from the course curriculum.
+Interpretability is essential for deploying models in business contexts. This analysis applies multiple interpretability techniques to validate that models learn linguistically meaningful patterns.
 
-### Model Interpretability Analysis
+### Attention Weight Analysis
 
-The project employs multiple interpretability methods to validate that models learn linguistically meaningful patterns:
+<p align="center">
+  <img src="./outputs/no_churn_example_1__1_.png" width="800">
+  <br>
+  <em>Attention heatmap showing transformer focus on key negative sentiment indicators</em>
+</p>
 
-**Attention Weight Analysis:**
-- Strong attention between negation words ("not", "never") and sentiment they reverse
-- High weights linking intensifiers ("very", "extremely") with modified adjectives
-- Long-range dependencies spanning multiple sentences
-- Focus on business-relevant phrases like "never coming back" or "highly recommend"
+The attention visualization reveals how the model processes the review *"Worst customer service ever. While some things that went..."* 
 
-**SHAP (SHapley Additive exPlanations):**
-- Provides token-level attribution showing which words push predictions toward churn or no-churn
-- Validates that model decisions align with human reasoning
-- Builds stakeholder trust through transparent explanations
+**Key observations:**
+- **Strong attention on "worst"** - Bright green/yellow cells show the model heavily weights this extreme negative term
+- **Focus on "customer service"** - Attention links these business-critical words together
+- **Contextual understanding** - The diagonal pattern shows the model processes tokens in sequence, understanding their combined impact
 
-**Feature Importance (Baseline Model):**
-- Words like "worst," "terrible," "rude" strongly predict churn
-- Words like "amazing," "excellent," "delicious" predict loyalty
-- Confirms model learns sensible linguistic patterns, not spurious correlations
+This demonstrates the model doesn't just count keywords—it understands how words relate to create meaning. The concentrated attention on negative sentiment indicators validates the model learns genuine linguistic patterns.
 
-This multi-method approach validates that the model captures real language understanding rather than dataset artifacts.
+---
 
+### SHAP Token Attribution
+
+SHAP (SHapley Additive exPlanations) provides complementary token-level attribution:
+- **Quantifies individual word contributions** to predictions
+- **Words like "worst," "terrible," "rude"** push predictions toward churn
+- **Words like "amazing," "excellent," "delicious"** push toward loyalty
+- **Validates alignment** between model decisions and human reasoning
+
+This transparency builds stakeholder trust—customer success teams can see exactly why a customer was flagged.
+
+---
+
+### Feature Importance (Baseline Model)
+
+<p align="center">
+  <img src="./outputs/key_churn_phrases.png" width="700">
+  <br>
+  <em>Top 15 loyalty and churn-indicating words from baseline logistic regression</em>
+</p>
+
+Feature importance from the baseline model confirms intuitive linguistic patterns:
+- **Churn indicators:** "worst," "terrible," "rude," "horrible," "disappointing"
+- **Loyalty indicators:** "great," "amazing," "excellent," "delicious," "love"
+- **Negation signals:** "not" and "never" rank highly, showing even classical models detect negation's importance
+
+The baseline's 96.9% AUC validates strong signal in these features. Transformers improve by understanding *context*—not just whether "terrible" appears, but what is terrible, how terrible, and how the full review frames it.
+
+---
+
+### Multi-Method Validation
+
+When attention weights, SHAP analysis, and feature importance all converge on the same linguistic patterns, we can trust the model captures genuine language understanding rather than dataset artifacts. This multi-method approach is essential for production deployment where stakeholders need to understand *why* a customer was flagged, not just accept a probability score.
 ---
 
 ## 7. Misclassification Analysis
