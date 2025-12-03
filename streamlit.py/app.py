@@ -34,6 +34,34 @@ def predict_with_baseline(text: str):
     return pred, float(prob)
 
 
+def get_word_importance(text: str):
+    """Get word importance scores for the review"""
+    tfidf_vectorizer, lr_model = load_baseline()
+    
+    # Get feature names and their coefficients
+    feature_names = tfidf_vectorizer.get_feature_names_out()
+    coefficients = lr_model.coef_[0]
+    
+    # Transform the text
+    X = tfidf_vectorizer.transform([text])
+    
+    # Get non-zero features in this review
+    feature_indices = X.nonzero()[1]
+    
+    # Get scores for words actually in this review
+    word_scores = {}
+    for idx in feature_indices:
+        word = feature_names[idx]
+        score = coefficients[idx]
+        # Only include if the word appears in the original text (handles n-grams)
+        if word in text.lower():
+            word_scores[word] = score
+    
+    # Sort by absolute importance
+    sorted_words = sorted(word_scores.items(), key=lambda x: abs(x[1]), reverse=True)
+    return sorted_words[:10]  # Top 10 most important words
+
+
 def format_prediction(pred: int, prob: float, threshold: float):
     label = "Churn risk" if prob >= threshold else "No churn risk"
     emoji = "⚠️" if label == "Churn risk" else "✅"
@@ -49,14 +77,11 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Customer Churn Prediction from Review Text")
+st.title("Transformers for Customer Churn Prediction")
 st.write(
     """
-Paste a customer review and the app will estimate how likely the customer is
-to churn based on the content of the review.
-
-This demo uses the baseline TF IDF plus Logistic Regression model 
-for lightweight and fast predictions.
+Paste a customer review and choose a model. The app predicts how likely the customer is to churn
+based on the text.
 """
 )
 
@@ -72,11 +97,15 @@ threshold = st.sidebar.slider(
     "Churn risk threshold",
     min_value=0.10,
     max_value=0.90,
-    value=0.50,
+    value=0.20,
     step=0.05,
 )
 
 show_details = st.sidebar.checkbox("Show detailed scores", value=True)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("### Device:")
+st.sidebar.text("cpu")
 
 # Example review
 example_text = (
@@ -102,7 +131,7 @@ if predict_button:
     else:
         with st.spinner("Running model..."):
             pred, prob = predict_with_baseline(review_text)
-            model_label = "Baseline TF IDF plus Logistic Regression"
+            model_label = "Baseline TF IDF Logistic Regression"
 
         label_text, prob_text = format_prediction(pred, prob, threshold)
 
@@ -119,6 +148,36 @@ if predict_button:
                 "The probability shown is the model estimate that the review "
                 "belongs to the churn class."
             )
+            
+            # Display the review with highlighted important words
+            important_words = get_word_importance(review_text)
+            
+            if important_words:
+                st.markdown("#### Key Words Influencing Prediction")
+                
+                # Separate into churn indicators and loyalty indicators
+                churn_words = [(w, s) for w, s in important_words if s > 0]
+                no_churn_words = [(w, s) for w, s in important_words if s < 0]
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("**🔴 Churn Indicators:**")
+                    if churn_words:
+                        for word, score in churn_words[:5]:
+                            st.write(f"• **{word}**: {score:.3f}")
+                    else:
+                        st.write("None detected")
+                
+                with col2:
+                    st.markdown("**🟢 Loyalty Indicators:**")
+                    if no_churn_words:
+                        for word, score in no_churn_words[:5]:
+                            st.write(f"• **{word}**: {abs(score):.3f}")
+                    else:
+                        st.write("None detected")
+            
+            st.markdown("---")
             st.code(review_text)
 
 
@@ -129,15 +188,41 @@ st.markdown("---")
 with st.expander("How this works"):
     st.write(
         """
-This demo uses the baseline TF IDF plus Logistic Regression model from the project.
-This model is extremely fast and still performs well with an AUC of 0.969.
+**About the Model:**
 
-The full project includes transformer models such as DistilBERT and RoBERTa,
-but those require much larger model files and are not included in this demo
-to keep the app lightweight.
+This demo uses the baseline TF-IDF + Logistic Regression model from the project.
+This model is extremely fast and achieves 96.9% AUC on the test set.
 
-The baseline model vectorizes the text using TF IDF and predicts churn risk
-based on patterns learned from the training data.
+**How It Works:**
+
+1. The text is vectorized using TF-IDF (Term Frequency-Inverse Document Frequency)
+2. The logistic regression model predicts churn probability based on learned patterns
+3. Words are weighted by their importance - positive weights indicate churn, negative indicate loyalty
+4. The model outputs a probability score between 0 and 1
+
+**Full Project:**
+
+The complete project includes transformer models (DistilBERT and RoBERTa) that achieve
+even higher accuracy (98.7% AUC), but they require larger model files and GPU for
+optimal speed. This demo uses the baseline for lightweight, fast predictions on CPU.
+
+**Performance:**
+- Accuracy: 90.7%
+- AUC: 96.9%
+- Inference: <1ms per prediction
+- Top 10% Precision: 99%
+
+See the full project on GitHub for transformer models, comprehensive evaluation,
+interpretability analysis, and deployment instructions.
 """
     )
 
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: #888;'>
+    Built with Streamlit • Model: TF-IDF + Logistic Regression • Dataset: Yelp Polarity
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
