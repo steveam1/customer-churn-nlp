@@ -112,8 +112,6 @@ The **Yelp Polarity dataset** is loaded from HuggingFace. This widely-used bench
 
 ## 4. Code Demonstration
 
-The complete implementation demonstrates mastery of concepts from course lectures. Below are key code segments with explanations.
-
 ### 4.1 Data Loading and Label Mapping
 
 ```python
