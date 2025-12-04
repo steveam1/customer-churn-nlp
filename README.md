@@ -461,7 +461,7 @@ Well-calibrated models produce predicted probabilities that align with empirical
 
 **Inference Latency Comparison:**
 
-![Inference Latency](outputs/latency_comparison.png)
+![Inference Latency](outputs/inference_latency_comparison.png)
 
 All models meet the real-time latency requirement (<100ms). DistilBERT at 5.61ms provides the best balance for production deployment scenarios.
 
@@ -497,7 +497,7 @@ This transparency builds stakeholder trust—customer success teams can see exac
 
 ### Feature Importance (Baseline Model)
 
-![Feature Importance](outputs/feature_importance.png)
+![Feature Importance](outputs/key_churn_phrases.png)
 
 Top 15 loyalty and churn-indicating words from baseline logistic regression.
 
