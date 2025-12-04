@@ -22,7 +22,7 @@ The project builds and compares three models to understand what drives churn pre
 
 **Baseline (TF-IDF + Logistic Regression):**
 - Establishes whether churn prediction is learnable from text alone
-- **Provides interpretable feature importance** (which words matter most)
+- Provides interpretable feature importance
 - Fast training and inference for comparison
 - Industry-standard approach before deep learning
 
