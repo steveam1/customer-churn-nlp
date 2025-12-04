@@ -482,7 +482,7 @@ The attention visualization reveals how the model processes the review *"Worst c
 - **Focus on "customer service"**: Attention links these business-critical words together
 - **Contextual understanding**: The diagonal pattern shows the model processes tokens in sequence, understanding their combined impact
 
-**This demonstrates the model doesn't just count keywords—it understands how words relate to create meaning.** The concentrated attention on negative sentiment indicators validates the model learns genuine linguistic patterns.
+**This demonstrates the model doesn't just count keywords but it understands how words relate to create meaning.** The concentrated attention on negative sentiment indicators validates the model learns genuine linguistic patterns.
 
 ### SHAP Token Attribution
 
